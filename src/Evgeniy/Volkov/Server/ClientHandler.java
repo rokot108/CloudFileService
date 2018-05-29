@@ -1,20 +1,24 @@
 package Evgeniy.Volkov.Server;
 
+import Evgeniy.Volkov.Server_API;
+
 import java.io.*;
 import java.net.Socket;
 
-public class ClientHandler {
+public class ClientHandler implements Server_API {
 
-    String clientID;
-    FielManager fielManager;
+    Server server;
+    private String clientID;
+    private FielManager fielManager;
     private Socket socket;
-    InputStream in;
-    OutputStream os;
-    ObjectInputStream inputObject;
-    ObjectOutputStream outputStream;
+    private InputStream in;
+    private OutputStream os;
+    private ObjectInputStream inputObject;
+    private ObjectOutputStream outputStream;
 
 
-    public ClientHandler(Socket socket) {
+    public ClientHandler(Server server, Socket socket) {
+        this.server = server;
         this.clientID = "0001";
         this.socket = socket;
         init();
@@ -34,6 +38,16 @@ public class ClientHandler {
                     request = inputObject.readObject();
                     if (request instanceof File) {
                         fielManager.writeFile((File) request);
+                    }
+                    if (request instanceof String) {
+                        String tmp = (String) request;
+                        if (((String) request).startsWith(CLOSE_CONNECTION)) {
+                            in.close();
+                            os.close();
+                            socket.close();
+                            server.disconnect(this);
+                            return;
+                        }
                     }
                 }
             }

@@ -1,11 +1,12 @@
 package Evgeniy.Volkov.Client;
 
 import Evgeniy.Volkov.ServerConst;
+import Evgeniy.Volkov.Server_API;
 
 import java.io.*;
 import java.net.Socket;
 
-public class ClientConnection implements ServerConst {
+public class ClientConnection implements ServerConst, Server_API {
 
     String ClientID = "0001";
     Socket socket;
@@ -29,6 +30,17 @@ public class ClientConnection implements ServerConst {
         try {
             out.writeObject(obj);
             out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void disconnect() {
+        send((Object) CLOSE_CONNECTION);
+        try {
+            in.close();
+            out.close();
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

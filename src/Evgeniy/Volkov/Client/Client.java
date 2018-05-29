@@ -1,10 +1,11 @@
 package Evgeniy.Volkov.Client;
 
 import Evgeniy.Volkov.ServerConst;
+import Evgeniy.Volkov.Server_API;
 
 import java.io.File;
 
-public class Client implements ServerConst {
+public class Client implements ServerConst, Server_API {
 
     ClientConnection clientConnection;
     File userDir;
@@ -18,5 +19,6 @@ public class Client implements ServerConst {
             System.out.println("Sending a file: " + files[i].getName());
             clientConnection.send((Object) files[i]);
         }
+        clientConnection.disconnect();
     }
 }

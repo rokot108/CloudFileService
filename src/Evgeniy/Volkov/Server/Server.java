@@ -22,10 +22,15 @@ public class Server implements ServerConst, Server_API {
             System.out.println("Server is up and running! Awaiting for connections");
             while (true) {
                 socket = server.accept();
-                clients.add(new ClientHandler(socket));
                 System.out.println("Client connected!");
+                clients.add(new ClientHandler(this, socket));
             }
         } catch (IOException e) {
         }
+    }
+
+    public void disconnect(ClientHandler clientHandler) {
+        clients.remove(clientHandler);
+        System.out.println("Client disconnected!");
     }
 }

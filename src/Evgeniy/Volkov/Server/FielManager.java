@@ -34,13 +34,15 @@ public class FielManager implements ServerConst {
     }
 
     public void writeFile(File file) {
-        System.out.println("Writing a new file: " + file.getName());
-        File tmp = new File(userDir+"/"+file.getName());
+        File tmp = new File(userDir + "/" + file.getName());
         file.renameTo(tmp);
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!file.exists()) {
+            System.out.println("Writing a new file: " + file.getName());
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
