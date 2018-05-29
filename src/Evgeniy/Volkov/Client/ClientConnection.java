@@ -2,16 +2,15 @@ package Evgeniy.Volkov.Client;
 
 import Evgeniy.Volkov.ServerConst;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class ClientConnection implements ServerConst {
 
+    String ClientID = "0001";
     Socket socket;
-    DataOutputStream out;
-    DataInputStream in;
+    ObjectOutputStream out;
+    ObjectInputStream in;
 
     public ClientConnection() {
         init();
@@ -20,9 +19,18 @@ public class ClientConnection implements ServerConst {
     public void init() {
         try {
             this.socket = new Socket(SERVER_URL, PORT);
-            this.out = new DataOutputStream(socket.getOutputStream());
-            this.in = new DataInputStream(socket.getInputStream());
+            this.out = new ObjectOutputStream(socket.getOutputStream());
+            this.in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
+        }
+    }
+
+    public void send(Object obj) {
+        try {
+            out.writeObject(obj);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

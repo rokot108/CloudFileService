@@ -5,6 +5,5 @@ public interface Server_API {
     String CLOSE_CONNECTION = "/end";
     String AUTH = "/auth";
     String AUTH_SUCCESSFUL = "/authok";
-    String PRIVATE_MSG = "/w";
-    String USERS_LIST = "/client_list";
+    String FILE_REQUEST = "/freq";
 }
