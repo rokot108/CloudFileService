@@ -1,7 +1,7 @@
-package Evgeniy.Volkov.Client;
+package Client;
 
-import Evgeniy.Volkov.ServerConst;
-import Evgeniy.Volkov.Server_API;
+import ServerConst;
+import Server_API;
 
 import java.io.File;
 

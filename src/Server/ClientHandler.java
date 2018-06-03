@@ -1,6 +1,6 @@
-package Evgeniy.Volkov.Server;
+package Server;
 
-import Evgeniy.Volkov.Server_API;
+import Server_API;
 
 import java.io.*;
 import java.net.Socket;

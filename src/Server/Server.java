@@ -1,7 +1,7 @@
-package Evgeniy.Volkov.Server;
+package Server;
 
-import Evgeniy.Volkov.ServerConst;
-import Evgeniy.Volkov.Server_API;
+import ServerConst;
+import Server_API;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="972a0393-4354-4823-86c1-4d2c42707f9d" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Evgeniy/Volkov/Client/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Evgeniy/Volkov/Client/ClientApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Evgeniy/Volkov/Server/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Evgeniy/Volkov/Server/ClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Evgeniy/Volkov/Server/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Evgeniy/Volkov/Server/ServerApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Evgeniy/Volkov/Server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Evgeniy/Volkov/Server/Server.java" afterDir="false" />
-    </list>
+    <list default="true" id="972a0393-4354-4823-86c1-4d2c42707f9d" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -34,7 +28,7 @@
         <entry file="file://$PROJECT_DIR$/src/Evgeniy/Volkov/Server/ServerApp.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="85">
-              <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
             </state>
           </provider>
         </entry>
@@ -67,7 +61,7 @@
         <entry file="file://$PROJECT_DIR$/src/Evgeniy/Volkov/Server/ClientHandler.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="372">
-              <caret line="41" column="55" lean-forward="true" selection-start-line="41" selection-start-column="55" selection-end-line="41" selection-end-column="55" />
+              <caret line="41" column="55" selection-start-line="41" selection-start-column="55" selection-end-line="41" selection-end-column="55" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -228,18 +222,18 @@
   </component>
   <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="Evgeniy.Volkov.Client.ClientApp" />
+      <option name="MAIN_CLASS_NAME" value="Client.ClientApp" />
       <module name="CloudFileService" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration name="ServerApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Evgeniy.Volkov.Server.ServerApp" />
+      <option name="MAIN_CLASS_NAME" value="Server.ServerApp" />
       <module name="CloudFileService" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="Evgeniy.Volkov.Server.*" />
+          <option name="PATTERN" value="Server.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -284,7 +278,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1096" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -552,7 +546,7 @@
     <entry file="file://$PROJECT_DIR$/src/Evgeniy/Volkov/Server/ServerApp.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
-          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
         </state>
       </provider>
     </entry>
@@ -569,7 +563,7 @@
     <entry file="file://$PROJECT_DIR$/src/Evgeniy/Volkov/Server/ClientHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="372">
-          <caret line="41" column="55" lean-forward="true" selection-start-line="41" selection-start-column="55" selection-end-line="41" selection-end-column="55" />
+          <caret line="41" column="55" selection-start-line="41" selection-start-column="55" selection-end-line="41" selection-end-column="55" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

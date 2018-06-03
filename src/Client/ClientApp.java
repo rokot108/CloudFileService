@@ -1,4 +1,4 @@
-package Evgeniy.Volkov.Client;
+package Client;
 
 public class ClientApp {
 

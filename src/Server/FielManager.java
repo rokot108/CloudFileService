@@ -1,6 +1,6 @@
-package Evgeniy.Volkov.Server;
+package Server;
 
-import Evgeniy.Volkov.ServerConst;
+import ServerConst;
 
 import java.io.File;
 import java.io.IOException;
