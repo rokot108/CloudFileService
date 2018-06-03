@@ -1,6 +1,6 @@
 package Server;
 
-import ServerConst;
+import Interfaces.ServerConst;
 
 import java.io.File;
 import java.io.IOException;

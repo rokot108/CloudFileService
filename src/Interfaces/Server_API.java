@@ -1,3 +1,5 @@
+package Interfaces;
+
 public interface Server_API {
     String SYSTEM_SYMBOL = "/";
     String CLOSE_CONNECTION = "/end";

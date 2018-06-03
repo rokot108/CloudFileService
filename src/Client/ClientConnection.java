@@ -1,7 +1,7 @@
 package Client;
 
-import ServerConst;
-import Server_API;
+import Interfaces.ServerConst;
+import Interfaces.Server_API;
 
 import java.io.*;
 import java.net.Socket;

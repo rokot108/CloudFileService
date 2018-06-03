@@ -1,7 +1,7 @@
 package Server;
 
-import ServerConst;
-import Server_API;
+import Interfaces.ServerConst;
+import Interfaces.Server_API;
 
 import java.io.IOException;
 import java.net.ServerSocket;
