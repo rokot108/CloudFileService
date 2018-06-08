@@ -7,12 +7,11 @@ import java.io.IOException;
 
 public class ServerFielManager implements ServerConst {
 
-    private boolean isBusy;
     private String userID;
     private File userDir;
 
     public ServerFielManager(String userID) {
-        isBusy = false;
+
         init();
         this.userID = userID;
         String userPath = SERVER_PAPH + "/" + userID;
@@ -35,7 +34,6 @@ public class ServerFielManager implements ServerConst {
     }
 
     public void writeFile(File file) {
-        isBusy = true;
         File tmp = new File(userDir + "/" + file.getName());
         file.renameTo(tmp);
         if (!file.exists()) {
@@ -46,7 +44,6 @@ public class ServerFielManager implements ServerConst {
                 e.printStackTrace();
             }
         }
-        isBusy = false;
     }
 
     public File getFile(String filename) {
@@ -55,9 +52,5 @@ public class ServerFielManager implements ServerConst {
             return tmp;
         }
         return null;
-    }
-
-    public boolean isBusy() {
-        return isBusy;
     }
 }

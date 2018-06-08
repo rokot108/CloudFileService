@@ -32,8 +32,7 @@ public class ClientConnection implements ServerConst, Server_API, Runnable {
 
     public void send(Object obj) {
         try {
-            Object tmp = obj;
-            out.writeObject(tmp);
+            out.writeObject(obj);
             out.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,17 +40,14 @@ public class ClientConnection implements ServerConst, Server_API, Runnable {
     }
 
     public void disconnect() {
-        if (!clientFileManager.isBusy()) {
-            System.out.println("Disconnecting!");
-            send((Object) CLOSE_CONNECTION);
-            interrupt();
-            try {
-                in.close();
-                out.close();
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        send((Object) CLOSE_CONNECTION);
+        interrupt();
+        try {
+            in.close();
+            out.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -71,9 +67,9 @@ public class ClientConnection implements ServerConst, Server_API, Runnable {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-
                 if (request instanceof File) {
                     clientFileManager.writeFile((File) request);
+                    return;
                 }
                 if (request instanceof String) {
                     String tmp = (String) request;

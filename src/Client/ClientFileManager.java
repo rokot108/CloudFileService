@@ -6,13 +6,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class ClientFileManager implements ServerConst {
-    private boolean isBusy;
 
     public ClientFileManager() {
-        isBusy = false;
         init();
     }
-
 
     private void init() {
         File homePath = new File(HOME_PATH);
@@ -26,7 +23,6 @@ public class ClientFileManager implements ServerConst {
     }
 
     public void writeFile(File file) {
-        isBusy = true;
         File tmp = new File(CLIENT_PATH + "/" + file.getName());
         file.renameTo(tmp);
         if (!file.exists()) {
@@ -37,10 +33,5 @@ public class ClientFileManager implements ServerConst {
                 e.printStackTrace();
             }
         }
-        isBusy = false;
-    }
-
-    public boolean isBusy() {
-        return isBusy;
     }
 }
