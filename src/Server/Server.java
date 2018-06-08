@@ -12,18 +12,16 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class Server implements ServerConst, Server_API {
 
-    LinkedList<ClientHandler> clients;
     ThreadPoolExecutor executor;
 
     public Server() {
-        clients = new LinkedList<>();
         ServerSocket server = null;
         Socket socket = null;
         executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
         try {
             server = new ServerSocket(PORT);
-            System.out.println("Server is up and running! Awaiting for connections");
+            System.out.println("Server is up and running! Awaiting for connections...");
             while (true) {
                 socket = server.accept();
                 System.out.println("Client connected!");
@@ -31,6 +29,7 @@ public class Server implements ServerConst, Server_API {
                 executor.execute(tmp);
             }
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

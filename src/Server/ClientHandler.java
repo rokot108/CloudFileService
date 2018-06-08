@@ -45,7 +45,7 @@ public class ClientHandler implements Server_API, Runnable {
                     }
                     if (request instanceof String) {
                         String tmp = (String) request;
-                        if (((String) request).startsWith(CLOSE_CONNECTION)) {
+                        if (tmp.startsWith(CLOSE_CONNECTION)) {
                             disconnect();
                             return;
                         }
