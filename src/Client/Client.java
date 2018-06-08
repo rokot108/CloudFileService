@@ -17,7 +17,7 @@ public class Client implements ServerConst, Server_API {
         files = userDir.listFiles();
         for (int i = 0; i < files.length; i++) {
             System.out.println("Sending a file: " + files[i].getName());
-            clientConnection.send((Object) files[i]);
+            clientConnection.send(files[i]);
         }
 
         Thread tread = new Thread(clientConnection);
