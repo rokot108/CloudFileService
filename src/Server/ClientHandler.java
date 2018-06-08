@@ -9,7 +9,7 @@ public class ClientHandler implements Server_API, Runnable {
 
     Server server;
     private String clientID;
-    private FielManager fielManager;
+    private ServerFielManager fielManager;
     private Socket socket;
     private InputStream in;
     private OutputStream os;
@@ -26,7 +26,7 @@ public class ClientHandler implements Server_API, Runnable {
     @Override
     public void run() {
         try {
-            fielManager = new FielManager(clientID);
+            fielManager = new ServerFielManager(clientID);
             try {
                 in = socket.getInputStream();
                 os = socket.getOutputStream();
@@ -48,6 +48,17 @@ public class ClientHandler implements Server_API, Runnable {
                         if (tmp.startsWith(CLOSE_CONNECTION)) {
                             disconnect();
                             return;
+                        }
+                        if (tmp.startsWith(FILE_REQUEST)) {
+                            String[] commands = tmp.split(STRING_SPLITTER, 2);
+                            File requestedFile = fielManager.getFile(commands[1]);
+                            if (requestedFile != null) {
+                                System.out.println("Sending a file: " + commands[1]);
+                                outputStream.writeObject(requestedFile);
+                            } else {
+                                System.out.println("No such file: " + commands[1]);
+                                outputStream.writeObject(FILE_NOT_FOUND);
+                            }
                         }
                     }
                 }

@@ -1,40 +1,29 @@
-package Server;
+package Client;
 
 import Interfaces.ServerConst;
 
 import java.io.File;
 import java.io.IOException;
 
-public class FielManager implements ServerConst {
+public class ClientFileManager implements ServerConst {
 
-    private String userID;
-    private File userDir;
-
-    public FielManager(String userID) {
-
+    public ClientFileManager() {
         init();
-        this.userID = userID;
-        String userPath = SERVER_PAPH + "/" + userID;
-        this.userDir = new File(userPath);
-        if (!userDir.exists()) {
-            System.out.println("Creating a user directory.");
-            userDir.mkdir();
-        }
     }
 
     private void init() {
         File homePath = new File(HOME_PATH);
-        File serverPath = new File(SERVER_PAPH);
+        File clientPath = new File(CLIENT_PATH);
         if (!homePath.exists()) {
             homePath.mkdir();
         }
-        if (!serverPath.exists()) {
-            serverPath.mkdir();
+        if (!clientPath.exists()) {
+            clientPath.mkdir();
         }
     }
 
     public void writeFile(File file) {
-        File tmp = new File(userDir + "/" + file.getName());
+        File tmp = new File(CLIENT_PATH + "/" + file.getName());
         file.renameTo(tmp);
         if (!file.exists()) {
             System.out.println("Writing a new file: " + file.getName());

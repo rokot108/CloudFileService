@@ -6,4 +6,6 @@ public interface Server_API {
     String AUTH = "/auth";
     String AUTH_SUCCESSFUL = "/authok";
     String FILE_REQUEST = "/freq";
+    String STRING_SPLITTER = ";";
+    String FILE_NOT_FOUND = "/not_found";
 }

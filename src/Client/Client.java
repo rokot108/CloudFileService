@@ -19,6 +19,19 @@ public class Client implements ServerConst, Server_API {
             System.out.println("Sending a file: " + files[i].getName());
             clientConnection.send((Object) files[i]);
         }
+
+        Thread tread = new Thread(clientConnection);
+        tread.start();
+
+        System.out.println("Requesting a file: Sense8.s01e01.1080p.WEBRip.NewStudio.TV.mkv");
+        clientConnection.send(FILE_REQUEST + STRING_SPLITTER + "Sense8.s01e01.1080p.WEBRip.NewStudio.TV.mkv");
+
+        try {
+            tread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         clientConnection.disconnect();
     }
 }
