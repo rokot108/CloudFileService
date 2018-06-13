@@ -1,19 +1,34 @@
-package Server;
-
-import Interfaces.ServerConst;
+package FileManager;
 
 import java.io.File;
 import java.io.IOException;
 
-public class ServerFielManager implements ServerConst {
+import Interfaces.Constants;
+
+public class FileManager implements Constants {
 
     private String userID;
     private File userDir;
 
-    public ServerFielManager(String userID) {
 
-        init();
+    public FileManager(String userID) {
         this.userID = userID;
+        initServ();
+    }
+
+    public FileManager() {
+        initUser();
+    }
+
+    private void initServ() {
+        File homePath = new File(HOME_PATH);
+        File serverPath = new File(SERVER_PAPH);
+        if (!homePath.exists()) {
+            homePath.mkdir();
+        }
+        if (!serverPath.exists()) {
+            serverPath.mkdir();
+        }
         String userPath = SERVER_PAPH + "/" + userID;
         this.userDir = new File(userPath);
         if (!userDir.exists()) {
@@ -22,14 +37,14 @@ public class ServerFielManager implements ServerConst {
         }
     }
 
-    private void init() {
+    private void initUser() {
         File homePath = new File(HOME_PATH);
-        File serverPath = new File(SERVER_PAPH);
+        userDir = new File(CLIENT_PATH);
         if (!homePath.exists()) {
             homePath.mkdir();
         }
-        if (!serverPath.exists()) {
-            serverPath.mkdir();
+        if (!userDir.exists()) {
+            userDir.mkdir();
         }
     }
 

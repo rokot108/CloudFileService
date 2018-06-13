@@ -1,6 +1,6 @@
 package Interfaces;
 
-public interface ServerConst {
+public interface Constants {
     int PORT = 8189;
     String SERVER_URL = "localhost";
     String HOME_PATH = "C:/CloudService";
