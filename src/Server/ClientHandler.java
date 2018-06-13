@@ -1,5 +1,6 @@
 package Server;
 
+import FileManager.FileManager;
 import Interfaces.Server_API;
 
 import java.io.*;
@@ -9,7 +10,7 @@ public class ClientHandler implements Server_API, Runnable {
 
     Server server;
     private String clientID;
-    private ServerFielManager fielManager;
+    private FileManager fielManager;
     private Socket socket;
     private InputStream in;
     private OutputStream os;
@@ -26,7 +27,7 @@ public class ClientHandler implements Server_API, Runnable {
     @Override
     public void run() {
         try {
-            fielManager = new ServerFielManager(clientID);
+            fielManager = new FileManager(clientID);
             try {
                 in = socket.getInputStream();
                 os = socket.getOutputStream();

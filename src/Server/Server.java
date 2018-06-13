@@ -1,16 +1,15 @@
 package Server;
 
-import Interfaces.ServerConst;
+import Interfaces.Constants;
 import Interfaces.Server_API;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class Server implements ServerConst, Server_API {
+public class Server implements Constants, Server_API {
 
     ThreadPoolExecutor executor;
 

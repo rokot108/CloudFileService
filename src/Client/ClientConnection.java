@@ -1,18 +1,19 @@
 package Client;
 
-import Interfaces.ServerConst;
+import FileManager.FileManager;
+import Interfaces.Constants;
 import Interfaces.Server_API;
 
 import java.io.*;
 import java.net.Socket;
 
-public class ClientConnection implements ServerConst, Server_API, Runnable {
+public class ClientConnection implements Constants, Server_API, Runnable {
 
     String ClientID = "0001";
     Socket socket;
     ObjectOutputStream out;
     ObjectInputStream in;
-    ClientFileManager clientFileManager;
+    FileManager clientFileManager;
     private boolean isInterrupted = false;
 
     public ClientConnection() {
@@ -20,7 +21,7 @@ public class ClientConnection implements ServerConst, Server_API, Runnable {
     }
 
     public void init() {
-        clientFileManager = new ClientFileManager();
+        FileManager fileManager = new FileManager();
         try {
             this.socket = new Socket(SERVER_URL, PORT);
             this.out = new ObjectOutputStream(socket.getOutputStream());

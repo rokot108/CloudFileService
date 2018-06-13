@@ -1,11 +1,11 @@
 package Client;
 
-import Interfaces.ServerConst;
+import Interfaces.Constants;
 import Interfaces.Server_API;
 
 import java.io.File;
 
-public class Client implements ServerConst, Server_API {
+public class Client implements Constants, Server_API {
 
     ClientConnection clientConnection;
     File userDir;
