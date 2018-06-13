@@ -13,7 +13,7 @@ public class ClientConnection implements Constants, Server_API, Runnable {
     Socket socket;
     ObjectOutputStream out;
     ObjectInputStream in;
-    FileManager clientFileManager;
+    FileManager fileManager;
     private boolean isInterrupted = false;
 
     public ClientConnection() {
@@ -21,7 +21,7 @@ public class ClientConnection implements Constants, Server_API, Runnable {
     }
 
     public void init() {
-        FileManager fileManager = new FileManager();
+        fileManager = new FileManager();
         try {
             this.socket = new Socket(SERVER_URL, PORT);
             this.out = new ObjectOutputStream(socket.getOutputStream());
@@ -38,6 +38,10 @@ public class ClientConnection implements Constants, Server_API, Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendFile(String filename) {
+        send(fileManager.getFile(filename));
     }
 
     public void disconnect() {
@@ -69,7 +73,7 @@ public class ClientConnection implements Constants, Server_API, Runnable {
                     e.printStackTrace();
                 }
                 if (request instanceof File) {
-                    clientFileManager.writeFile((File) request);
+                    fileManager.writeFile((File) request);
                     return;
                 }
                 if (request instanceof String) {

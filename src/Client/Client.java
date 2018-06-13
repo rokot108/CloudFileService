@@ -17,14 +17,14 @@ public class Client implements Constants, Server_API {
         files = userDir.listFiles();
         for (int i = 0; i < files.length; i++) {
             System.out.println("Sending a file: " + files[i].getName());
-            clientConnection.send(files[i]);
+            clientConnection.sendFile(files[i].getName());
         }
 
         Thread tread = new Thread(clientConnection);
         tread.start();
 
-        System.out.println("Requesting a file: Sense8.s01e01.1080p.WEBRip.NewStudio.TV.mkv");
-        clientConnection.send(FILE_REQUEST + STRING_SPLITTER + "Sense8.s01e01.1080p.WEBRip.NewStudio.TV.mkv");
+        System.out.println("Requesting a file: hfs.exe");
+        clientConnection.send(FILE_REQUEST + STRING_SPLITTER + "hfs.exe");
 
         try {
             tread.join();

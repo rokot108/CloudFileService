@@ -10,39 +10,35 @@ public class ClientHandler implements Server_API, Runnable {
 
     Server server;
     private String clientID;
-    private FileManager fielManager;
+    private FileManager fileManager;
     private Socket socket;
-    private InputStream in;
-    private OutputStream os;
-    private ObjectInputStream inputObject;
-    private ObjectOutputStream outputStream;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
 
 
     public ClientHandler(Server server, Socket socket) {
         this.server = server;
         this.clientID = "0001";
         this.socket = socket;
+        this.fileManager = new FileManager(clientID);
+        try {
+            in = new ObjectInputStream(socket.getInputStream());
+            out = new ObjectOutputStream(socket.getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void run() {
-        try {
-            fielManager = new FileManager(clientID);
-            try {
-                in = socket.getInputStream();
-                os = socket.getOutputStream();
-                inputObject = new ObjectInputStream(in);
-                outputStream = new ObjectOutputStream(os);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            while (true) {
+        while (true) {
+            try {
                 Object request = new Object();
                 while (true) {
-                    request = inputObject.readObject();
+                    request = in.readObject();
                     if (request instanceof File) {
-                        fielManager.writeFile((File) request);
+                        fileManager.writeFile((File) request);
                     }
                     if (request instanceof String) {
                         String tmp = (String) request;
@@ -52,21 +48,30 @@ public class ClientHandler implements Server_API, Runnable {
                         }
                         if (tmp.startsWith(FILE_REQUEST)) {
                             String[] commands = tmp.split(STRING_SPLITTER, 2);
-                            File requestedFile = fielManager.getFile(commands[1]);
+                            File requestedFile = fileManager.getFile(commands[1]);
                             if (requestedFile != null) {
                                 System.out.println("Sending a file: " + commands[1]);
-                                outputStream.writeObject(requestedFile);
+                                send(requestedFile);
                             } else {
                                 System.out.println("No such file: " + commands[1]);
-                                outputStream.writeObject(FILE_NOT_FOUND);
+                                send(FILE_NOT_FOUND);
                             }
                         }
                     }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
+        }
+    }
+
+    public void send(Object obj) {
+        try {
+            out.writeObject(obj);
+            out.flush();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -74,7 +79,7 @@ public class ClientHandler implements Server_API, Runnable {
     public void disconnect() {
         try {
             in.close();
-            os.close();
+            out.close();
             socket.close();
             server.disconnect(this);
         } catch (IOException e) {
