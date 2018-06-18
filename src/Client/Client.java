@@ -9,29 +9,18 @@ public class Client implements Constants, Server_API {
 
     ClientConnection clientConnection;
     File userDir;
-    File[] files;
+    String[] files;
 
     Client() {
         clientConnection = new ClientConnection();
         userDir = new File(CLIENT_PATH);
-        files = userDir.listFiles();
+        files = userDir.list();
         for (int i = 0; i < files.length; i++) {
-            System.out.println("Sending a file: " + files[i].getName());
-            clientConnection.sendFile(files[i].getName());
+            System.out.println("Sending a file: " + files[i]);
+            clientConnection.sendFile(files[i]);
         }
+        while (true) {
 
-        Thread tread = new Thread(clientConnection);
-        tread.start();
-
-        System.out.println("Requesting a file: hfs.exe");
-        clientConnection.send(FILE_REQUEST + STRING_SPLITTER + "hfs.exe");
-
-        try {
-            tread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
-
-        clientConnection.disconnect();
     }
 }

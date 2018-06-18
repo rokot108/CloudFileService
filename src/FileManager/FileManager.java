@@ -1,41 +1,35 @@
 package FileManager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 
-import Client.ClientConnection;
-import Interfaces.Constants;
-import Server.ClientHandler;
+import Interfaces.*;
 
 public class FileManager implements Constants {
 
     private String userID;
     private File userDir;
-    private ClientConnection clientConnection;
-    private ClientHandler serverConnection;
+    CloudServiceConnectable connection;
+    ArrayList<FileWriter> fileWriters;
 
-    public FileManager(String userID, ClientHandler serverConnection) {
-        this.serverConnection = serverConnection;
+    public FileManager(String userID, CloudServiceConnectable connection) {
+        this.connection = connection;
         this.userID = userID;
         init();
         initServ();
     }
 
-    public FileManager(ClientConnection clientConnection) {
-        this.clientConnection = clientConnection;
+    public FileManager(CloudServiceConnectable connection) {
+        this.connection = connection;
         initUser();
     }
 
     private void init() {
+        fileWriters = new ArrayList<FileWriter>();
         File homePath = new File(HOME_PATH);
-        File tmpPath = new File(TMP_PAPH);
         if (!homePath.exists()) {
             homePath.mkdir();
-        }
-        if (!tmpPath.exists()) {
-            tmpPath.mkdir();
         }
     }
 
@@ -59,17 +53,16 @@ public class FileManager implements Constants {
         }
     }
 
-    public void writeFile(File file) {
-        File tmp = new File(userDir + "/" + file.getName());
-        file.renameTo(tmp);
-        if (!file.exists()) {
-            System.out.println("Writing a new file: " + file.getName());
+    public File createFile(String filename) {
+        File tmp = new File(userDir + "/" + filename);
+        if (!tmp.exists()) {
             try {
-                file.createNewFile();
+                tmp.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+            return tmp;
+        } else return null;
     }
 
     public File getFile(String filename) {
@@ -87,24 +80,35 @@ public class FileManager implements Constants {
     }
 
     public void splitAndSend(String filename) {
-        File requestedFile = new File(userDir + "/" + filename);
-        if (requestedFile.exists()) {
-            long totalParts = requestedFile.length() % FILEPART_SIZE == 0 ? requestedFile.length() % FILEPART_SIZE : requestedFile.length() % FILEPART_SIZE + 1;
-            Thread t = new Thread(() -> {
-                try (FileInputStream fis = new FileInputStream(requestedFile.getPath())) {
+        File sendingFile = new File(userDir + "/" + filename);
+        if (sendingFile.exists()) {
+                        Thread t = new Thread(() -> {
+                try (FileInputStream fis = new FileInputStream(sendingFile.getPath())) {
+                    int totalParts = (int) (sendingFile.length() / FILEPART_SIZE);
+                    if (sendingFile.length() / FILEPART_SIZE != 0) totalParts++;
                     byte[] byteArray = new byte[FILEPART_SIZE];
-                    int part = 1;
-                    while (part <= totalParts) {
+                    int part = 0;
+                    while (part < totalParts) {
+                        part++;
                         fis.read(byteArray);
                         FilePart filePart = new FilePart(filename, totalParts, part, byteArray);
-                        clientConnection.send(filePart);
-                        part++;
+                        connection.send(filePart);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-            );
+            });
+            t.start();
         } else System.out.println("File not found: " + filename);
+    }
+
+    public void writeSplitedFile(FilePart filePart) {
+        for (FileWriter fw : fileWriters) {
+            if (fw.getFilename().equals(filePart.getFilename())) {
+                fw.writeToFile(filePart);
+                return;
+            }
+        }
+        fileWriters.add(new FileWriter(this, filePart));
     }
 }

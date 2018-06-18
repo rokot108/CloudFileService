@@ -9,11 +9,11 @@ public class FilePart implements Serializable {
     private int part;
     private byte[] byteArray;
 
-    public FilePart(String filename, long totalParts, int part, byte[] bytearr) {
+    public FilePart(String filename, long totalParts, int part, byte[] byteArray) {
         this.filename = filename;
         this.totalParts = totalParts;
         this.part = part;
-        this.byteArray = bytearr;
+        this.byteArray = byteArray;
     }
 
     public String getFilename() {

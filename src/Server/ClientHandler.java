@@ -1,12 +1,12 @@
 package Server;
 
 import FileManager.*;
-import Interfaces.Server_API;
+import Interfaces.*;
 
 import java.io.*;
 import java.net.Socket;
 
-public class ClientHandler implements Server_API, Runnable {
+public class ClientHandler implements Server_API, Runnable, CloudServiceConnectable {
 
     Server server;
     private String clientID;
@@ -38,7 +38,7 @@ public class ClientHandler implements Server_API, Runnable {
                 while (true) {
                     request = in.readObject();
                     if (request instanceof FilePart) {
-                        fileManager.writeFile((File) request);
+                        fileManager.writeSplitedFile((FilePart) request);
                     }
                     if (request instanceof String) {
                         String tmp = (String) request;
@@ -67,7 +67,7 @@ public class ClientHandler implements Server_API, Runnable {
         }
     }
 
-    public void send(Object obj) {
+    synchronized public void send(Object obj) {
         try {
             out.writeObject(obj);
             out.flush();
