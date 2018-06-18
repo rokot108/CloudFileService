@@ -1,23 +1,30 @@
 package FileManager;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import Client.ClientConnection;
 import Interfaces.Constants;
+import Server.ClientHandler;
 
 public class FileManager implements Constants {
 
     private String userID;
     private File userDir;
+    private ClientConnection clientConnection;
+    private ClientHandler serverConnection;
 
-    public FileManager(String userID) {
+    public FileManager(String userID, ClientHandler serverConnection) {
+        this.serverConnection = serverConnection;
         this.userID = userID;
         init();
         initServ();
     }
 
-    public FileManager() {
+    public FileManager(ClientConnection clientConnection) {
+        this.clientConnection = clientConnection;
         initUser();
     }
 
@@ -77,5 +84,27 @@ public class FileManager implements Constants {
             return tmp;
         }
         return null;
+    }
+
+    public void splitAndSend(String filename) {
+        File requestedFile = new File(userDir + "/" + filename);
+        if (requestedFile.exists()) {
+            long totalParts = requestedFile.length() % FILEPART_SIZE == 0 ? requestedFile.length() % FILEPART_SIZE : requestedFile.length() % FILEPART_SIZE + 1;
+            Thread t = new Thread(() -> {
+                try (FileInputStream fis = new FileInputStream(requestedFile.getPath())) {
+                    byte[] byteArray = new byte[FILEPART_SIZE];
+                    int part = 1;
+                    while (part <= totalParts) {
+                        fis.read(byteArray);
+                        FilePart filePart = new FilePart(filename, totalParts, part, byteArray);
+                        clientConnection.send(filePart);
+                        part++;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            );
+        } else System.out.println("File not found: " + filename);
     }
 }

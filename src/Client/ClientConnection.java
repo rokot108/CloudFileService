@@ -21,7 +21,7 @@ public class ClientConnection implements Constants, Server_API, Runnable {
     }
 
     public void init() {
-        fileManager = new FileManager();
+        fileManager = new FileManager(this);
         try {
             this.socket = new Socket(SERVER_URL, PORT);
             this.out = new ObjectOutputStream(socket.getOutputStream());
@@ -41,11 +41,11 @@ public class ClientConnection implements Constants, Server_API, Runnable {
     }
 
     public void sendFile(String filename) {
-        send(fileManager.getFile(filename));
+        fileManager.splitAndSend(filename);
     }
 
     public void disconnect() {
-        send((Object) CLOSE_CONNECTION);
+        send(CLOSE_CONNECTION);
         interrupt();
         try {
             in.close();

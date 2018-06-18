@@ -1,6 +1,6 @@
 package Server;
 
-import FileManager.FileManager;
+import FileManager.*;
 import Interfaces.Server_API;
 
 import java.io.*;
@@ -20,7 +20,7 @@ public class ClientHandler implements Server_API, Runnable {
         this.server = server;
         this.clientID = "0001";
         this.socket = socket;
-        this.fileManager = new FileManager(clientID);
+        this.fileManager = new FileManager(clientID, this);
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -34,10 +34,10 @@ public class ClientHandler implements Server_API, Runnable {
 
         while (true) {
             try {
-                Object request = new Object();
+                Object request;
                 while (true) {
                     request = in.readObject();
-                    if (request instanceof File) {
+                    if (request instanceof FilePart) {
                         fileManager.writeFile((File) request);
                     }
                     if (request instanceof String) {
