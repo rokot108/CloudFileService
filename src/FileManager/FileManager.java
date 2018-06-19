@@ -80,22 +80,28 @@ public class FileManager implements Constants {
     }
 
     public void splitAndSend(String filename) {
-        File sendingFile = new File(userDir + "/" + filename);
+        String filepath = userDir + "/" + filename;
+        File sendingFile = new File(filepath);
         if (sendingFile.exists()) {
-                        Thread t = new Thread(() -> {
-                try (FileInputStream fis = new FileInputStream(sendingFile.getPath())) {
+            Thread t = new Thread(() -> {
+                try (FileInputStream fis = new FileInputStream(sendingFile)) {
                     int totalParts = (int) (sendingFile.length() / FILEPART_SIZE);
-                    if (sendingFile.length() / FILEPART_SIZE != 0) totalParts++;
-                    byte[] byteArray = new byte[FILEPART_SIZE];
-                    int part = 0;
-                    while (part < totalParts) {
-                        part++;
-                        fis.read(byteArray);
-                        FilePart filePart = new FilePart(filename, totalParts, part, byteArray);
-                        connection.send(filePart);
+                    if (sendingFile.length() / FILEPART_SIZE != 0 || totalParts == 0) totalParts++;
+                    for (int part = 1; part <= totalParts; part++) {
+                        if (part < totalParts) {
+                            byte[] byteArray = new byte[FILEPART_SIZE];
+                            fis.read(byteArray);
+                            FilePart filePart = new FilePart(filename, totalParts, part, byteArray);
+                            connection.send(filePart);
+                        } else {
+                            byte[] byteArray = new byte[fis.available()];
+                            fis.read(byteArray);
+                            FilePart filePart = new FilePart(filename, totalParts, part, byteArray);
+                            connection.send(filePart);
+                        }
                     }
+                } catch (FileNotFoundException e) {
                 } catch (IOException e) {
-                    e.printStackTrace();
                 }
             });
             t.start();
