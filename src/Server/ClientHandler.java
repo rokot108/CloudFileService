@@ -46,7 +46,7 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                             disconnect();
                             return;
                         }
-                        if (tmp.startsWith(FILE_REQUEST)) {
+                       /* if (tmp.startsWith(FILE_REQUEST)) {
                             String[] commands = tmp.split(STRING_SPLITTER, 2);
                             File requestedFile = fileManager.getFile(commands[1]);
                             if (requestedFile != null) {
@@ -56,7 +56,7 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                                 System.out.println("No such file: " + commands[1]);
                                 send(FILE_NOT_FOUND);
                             }
-                        }
+                        }*/
                     }
                 }
             } catch (IOException e) {

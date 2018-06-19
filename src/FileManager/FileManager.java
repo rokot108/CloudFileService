@@ -34,11 +34,11 @@ public class FileManager implements Constants {
     }
 
     private void initServ() {
-        File serverPath = new File(SERVER_PAPH);
+        File serverPath = new File(SERVER_PATH);
         if (!serverPath.exists()) {
             serverPath.mkdir();
         }
-        String userPath = SERVER_PAPH + "/" + userID;
+        String userPath = SERVER_PATH + "/" + userID;
         userDir = new File(userPath);
         if (!userDir.exists()) {
             System.out.println("Creating a user directory.");
@@ -65,23 +65,8 @@ public class FileManager implements Constants {
         } else return null;
     }
 
-    public File getFile(String filename) {
-        File requestedFile = new File(userDir + "/" + filename);
-        if (requestedFile.exists()) {
-            File tmp = new File(TMP_PAPH + "/" + filename);
-            try {
-                Files.copy(requestedFile.toPath(), tmp.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return tmp;
-        }
-        return null;
-    }
-
     public void splitAndSend(String filename) {
-        String filepath = userDir + "/" + filename;
-        File sendingFile = new File(filepath);
+        File sendingFile = new File(userDir + "/" + filename);
         if (sendingFile.exists()) {
             Thread t = new Thread(() -> {
                 try (FileInputStream fis = new FileInputStream(sendingFile)) {
@@ -94,9 +79,9 @@ public class FileManager implements Constants {
                             FilePart filePart = new FilePart(filename, totalParts, part, byteArray);
                             connection.send(filePart);
                         } else {
-                            byte[] byteArray = new byte[fis.available()];
-                            fis.read(byteArray);
-                            FilePart filePart = new FilePart(filename, totalParts, part, byteArray);
+                            byte[] lastByteArray = new byte[fis.available()];
+                            fis.read(lastByteArray);
+                            FilePart filePart = new FilePart(filename, totalParts, part, lastByteArray);
                             connection.send(filePart);
                         }
                     }

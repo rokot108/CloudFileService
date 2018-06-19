@@ -40,6 +40,9 @@ public class FileWriter implements Constants {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (filePart.getPart() == filePart.getTotalParts()) {
+            System.out.println("File " + filePart.getFilename() + " has been received.");
+        }
     }
 
 
