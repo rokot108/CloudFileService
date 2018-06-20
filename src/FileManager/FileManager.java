@@ -67,11 +67,11 @@ public class FileManager implements Constants {
 
     public void splitAndSend(String filename) {
         File sendingFile = new File(userDir + "/" + filename);
-        if (sendingFile.exists()) {
+        try (FileInputStream fis = new FileInputStream(sendingFile)) {
             Thread t = new Thread(() -> {
-                try (FileInputStream fis = new FileInputStream(sendingFile)) {
-                    int totalParts = (int) (sendingFile.length() / FILEPART_SIZE);
-                    if (sendingFile.length() / FILEPART_SIZE != 0 || totalParts == 0) totalParts++;
+                int totalParts = (int) (sendingFile.length() / FILEPART_SIZE);
+                if (sendingFile.length() / FILEPART_SIZE != 0 || totalParts == 0) totalParts++;
+                try {
                     for (int part = 1; part <= totalParts; part++) {
                         if (part < totalParts) {
                             byte[] byteArray = new byte[FILEPART_SIZE];
@@ -85,12 +85,16 @@ public class FileManager implements Constants {
                             connection.send(filePart);
                         }
                     }
-                } catch (FileNotFoundException e) {
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             });
             t.start();
-        } else System.out.println("File not found: " + filename);
+        } catch (FileNotFoundException e) {
+            System.out.println("File: " + filename + " - not found!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void writeSplitedFile(FilePart filePart) {

@@ -1,6 +1,6 @@
 package Client;
 
-import FileManager.FileManager;
+import FileManager.*;
 import Interfaces.*;
 
 import java.io.*;
@@ -71,7 +71,9 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-
+                if (request instanceof FilePart) {
+                    fileManager.writeSplitedFile((FilePart) request);
+                }
                 if (request instanceof String) {
                     String tmp = (String) request;
                     if (tmp.startsWith(CLOSE_CONNECTION)) {
