@@ -61,28 +61,24 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
 
     @Override
     public void run() {
-        while (true) {
-            Object request = new Object();
-            while (!isInterrupted) {
-                try {
-                    request = in.readObject();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-                if (request instanceof FilePart) {
-                    fileManager.writeSplitedFile((FilePart) request);
-                }
-                if (request instanceof String) {
-                    String tmp = (String) request;
-                    if (tmp.startsWith(CLOSE_CONNECTION)) {
-                        disconnect();
-                        return;
-                    }
+        Object request = new Object();
+        while (!isInterrupted) {
+            try {
+                request = in.readObject();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            if (request instanceof FilePart) {
+                fileManager.writeSplitedFile((FilePart) request);
+            }
+            if (request instanceof String) {
+                String tmp = (String) request;
+                if (tmp.startsWith(CLOSE_CONNECTION)) {
+                    disconnect();
                 }
             }
-            return;
         }
     }
 }

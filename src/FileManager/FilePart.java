@@ -5,11 +5,11 @@ import java.io.Serializable;
 public class FilePart implements Serializable {
 
     private String filename;
-    private long totalParts;
+    private int totalParts;
     private int part;
     private byte[] byteArray;
 
-    public FilePart(String filename, long totalParts, int part, byte[] byteArray) {
+    public FilePart(String filename, int totalParts, int part, byte[] byteArray) {
         this.filename = filename;
         this.totalParts = totalParts;
         this.part = part;
@@ -20,7 +20,7 @@ public class FilePart implements Serializable {
         return filename;
     }
 
-    public long getTotalParts() {
+    public int getTotalParts() {
         return totalParts;
     }
 

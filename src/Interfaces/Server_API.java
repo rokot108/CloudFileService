@@ -7,5 +7,4 @@ public interface Server_API {
     String FILE_REQUEST = "/freq";
     String STRING_SPLITTER = ";";
     String FILE_NOT_FOUND = "/not_found";
-    String USERS_LIST = "/client_list";
 }
