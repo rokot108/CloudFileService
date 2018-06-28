@@ -2,18 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="471e9de3-cfa9-4bab-971a-652e0dd2c93b" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Client/ClientWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CloudFileService/Client/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CloudFileService/Client/Client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CloudFileService/Client/ClientApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CloudFileService/Client/ClientApp.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CloudFileService/Client/ClientConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CloudFileService/Client/ClientConnection.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CloudFileService/FileManager/FileManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CloudFileService/FileManager/FileManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CloudFileService/FileManager/FilePart.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CloudFileService/FileManager/FilePart.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CloudFileService/FileManager/FileWriter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CloudFileService/FileManager/FileWriter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CloudFileService/Interfaces/Server_API.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CloudFileService/Interfaces/Server_API.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CloudFileService/Server/ClientHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CloudFileService/Server/ClientHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ClientApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client/ClientWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientWindow.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -41,8 +30,8 @@
       <file leaf-file-name="ClientWindow.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Client/ClientWindow.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="134">
-              <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+            <state relative-caret-position="168">
+              <caret line="109" column="41" lean-forward="true" selection-start-line="109" selection-start-column="41" selection-end-line="109" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -714,8 +703,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Client/ClientWindow.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="134">
-          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+        <state relative-caret-position="168">
+          <caret line="109" column="41" lean-forward="true" selection-start-line="109" selection-start-column="41" selection-end-line="109" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
