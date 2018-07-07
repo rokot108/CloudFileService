@@ -1,15 +1,15 @@
 package FileManager;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 
 import Interfaces.*;
 
 public class FileManager implements Constants {
 
     private String userID;
-    private File userDir;
+    private File currentDir;
     CloudServiceConnectable connection;
     ArrayList<FileWriter> fileWriters;
 
@@ -39,22 +39,22 @@ public class FileManager implements Constants {
             serverPath.mkdir();
         }
         String userPath = SERVER_PATH + "/" + userID;
-        userDir = new File(userPath);
-        if (!userDir.exists()) {
+        currentDir = new File(userPath);
+        if (!currentDir.exists()) {
             System.out.println("Creating a user directory.");
-            userDir.mkdir();
+            currentDir.mkdir();
         }
     }
 
     private void initUser() {
-        userDir = new File(CLIENT_PATH);
-        if (!userDir.exists()) {
-            userDir.mkdir();
+        currentDir = new File(CLIENT_PATH);
+        if (!currentDir.exists()) {
+            currentDir.mkdir();
         }
     }
 
     public File createFile(String filename) {
-        File tmp = new File(userDir + "/" + filename);
+        File tmp = new File(currentDir + "/" + filename);
         if (!tmp.exists()) {
             try {
                 tmp.createNewFile();
@@ -66,7 +66,7 @@ public class FileManager implements Constants {
     }
 
     public void splitAndSend(String filename) {
-        File sendingFile = new File(userDir + "/" + filename);
+        File sendingFile = new File(currentDir + "/" + filename);
         try (FileInputStream fis = new FileInputStream(sendingFile)) {
             Thread t = new Thread(() -> {
                 int totalParts = (int) (sendingFile.length() / FILEPART_SIZE);
@@ -105,5 +105,9 @@ public class FileManager implements Constants {
             }
         }
         fileWriters.add(new FileWriter(this, filePart));
+    }
+
+    public File[] getFileArray() {
+        return currentDir.listFiles();
     }
 }

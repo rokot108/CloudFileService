@@ -21,13 +21,13 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
 
     public void init() {
         fileManager = new FileManager(this);
-        try {
+       /* try {
             this.socket = new Socket(SERVER_URL, PORT);
             this.out = new ObjectOutputStream(socket.getOutputStream());
             this.in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     synchronized public void send(Object obj) {
@@ -63,7 +63,7 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
     public void run() {
         Object request = new Object();
         while (!isInterrupted) {
-            try {
+           /* try {
                 request = in.readObject();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -78,7 +78,11 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
                 if (tmp.startsWith(CLOSE_CONNECTION)) {
                     disconnect();
                 }
-            }
+            }*/
         }
+    }
+
+    public FileManager getFileManager() {
+        return fileManager;
     }
 }

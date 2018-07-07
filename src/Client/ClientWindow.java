@@ -12,11 +12,15 @@ public class ClientWindow extends JFrame {
     private JPanel jPanelTopCenter;
     private JPanel jPanelTopRight;
     private JPanel jPanelBottom;
+    private JList userFiles;
+    private JList serverFiles;
+    private DefaultListModel listModelUserFiles;
+    private DefaultListModel listModelServerFiles;
+    private CellRenderer cellRenderer;
 
 
-    public ClientWindow() {
+    public ClientWindow(Client client) {
         setTitle("Cloud File Service");
-        //  client = new Client(this);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(500, 500);
         setLocationRelativeTo(null);
@@ -63,8 +67,7 @@ public class ClientWindow extends JFrame {
         gbAll.setConstraints(jPanelBottom, c);
         add(jPanelBottom);
 
-        GridBagLayout gbTopLeft = new GridBagLayout();
-        jPanelTopLeft = new JPanel(gbTopLeft);
+        jPanelTopLeft = new JPanel(new BorderLayout());
         jPanelTopLeft.setBackground(Color.GREEN);
 
         c.anchor = GridBagConstraints.WEST;
@@ -100,7 +103,6 @@ public class ClientWindow extends JFrame {
 
         gbTop.setConstraints(jPanelTopRight, c);
         jPanelTop.add(jPanelTopRight);
-        jPanelTopRight.setVisible(true);
 
         GridBagLayout gbTopCenter = new GridBagLayout();
         jPanelTopCenter = new JPanel(gbTopCenter);
@@ -120,10 +122,26 @@ public class ClientWindow extends JFrame {
 
         gbTop.setConstraints(jPanelTopCenter, c);
         jPanelTop.add(jPanelTopCenter);
-        jPanelTopCenter.setVisible(true);
 
-        /*jPanelTop.setVisible(true);
-        jPanelBottom.setVisible(true);*/
+        cellRenderer = new CellRenderer();
+
+        listModelUserFiles = new DefaultListModel();
+        userFiles = new JList(listModelUserFiles);
+        userFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        userFiles.setCellRenderer(new CellRenderer());
+        JScrollPane userListScroll = new JScrollPane(userFiles);
+        userListScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        userListScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        jPanelTopLeft.add(userListScroll, BorderLayout.CENTER);
+
         setVisible(true);
+    }
+
+    public DefaultListModel getListModelUserFiles() {
+        return listModelUserFiles;
+    }
+
+    public DefaultListModel getListModelServerFiles() {
+        return listModelServerFiles;
     }
 }
