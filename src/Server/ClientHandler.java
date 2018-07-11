@@ -31,7 +31,8 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
 
     @Override
     public void run() {
-
+        send(fileManager.getFileArray());
+        send(fileManager.getCurrentDir());
         while (true) {
             try {
                 Object request;
@@ -49,6 +50,13 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                         if (tmp.startsWith(FILE_REQUEST)) {
                             String[] commands = tmp.split(STRING_SPLITTER, 2);
                             fileManager.splitAndSend(commands[1]);
+                        }
+                        if (tmp.startsWith(CHANGE_CURRENT_SERVER_DIR)) {
+                            String[] req = tmp.split(" ");
+                            fileManager.changeCurrentDir(req[1]);
+                        }
+                        if (tmp.startsWith(UP_CURRENT_SERVER_DIR)) {
+                            fileManager.directoryUP();
                         }
                     }
                 }

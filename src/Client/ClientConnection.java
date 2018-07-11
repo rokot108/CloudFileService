@@ -12,30 +12,34 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
     Socket socket;
     ObjectOutputStream out;
     ObjectInputStream in;
+    Client client;
     FileManager fileManager;
     private boolean isInterrupted = false;
 
-    public ClientConnection() {
+    public ClientConnection(Client client) {
+        this.client = client;
         init();
     }
 
     public void init() {
         fileManager = new FileManager(this);
-       /* try {
+        try {
             this.socket = new Socket(SERVER_URL, PORT);
             this.out = new ObjectOutputStream(socket.getOutputStream());
             this.in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     synchronized public void send(Object obj) {
-        try {
-            out.writeObject(obj);
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (socket.isConnected()) {
+            try {
+                out.writeObject(obj);
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -44,8 +48,8 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
     }
 
     public void disconnect() {
-        send(CLOSE_CONNECTION);
         interrupt();
+        send(CLOSE_CONNECTION);
         try {
             in.close();
             out.close();
@@ -63,7 +67,7 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
     public void run() {
         Object request = new Object();
         while (!isInterrupted) {
-           /* try {
+            try {
                 request = in.readObject();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -73,12 +77,19 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
             if (request instanceof FilePart) {
                 fileManager.writeSplitedFile((FilePart) request);
             }
+            if (request instanceof File[]) {
+                client.fillServerFileList((File[]) request);
+            }
             if (request instanceof String) {
                 String tmp = (String) request;
                 if (tmp.startsWith(CLOSE_CONNECTION)) {
                     disconnect();
                 }
-            }*/
+                if (tmp.startsWith(NEW_CURRENT_SERVER_DIR)) {
+                    String[] req = tmp.split(" ");
+                    client.setServerCurrentDir(req[1]);
+                }
+            }
         }
     }
 

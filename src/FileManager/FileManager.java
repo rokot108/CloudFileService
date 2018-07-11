@@ -2,13 +2,13 @@ package FileManager;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
 import Interfaces.*;
 
-public class FileManager implements Constants {
+public class FileManager implements Constants, Server_API {
 
     private String userID;
+    private File userDir;
     private File currentDir;
     CloudServiceConnectable connection;
     ArrayList<FileWriter> fileWriters;
@@ -22,14 +22,15 @@ public class FileManager implements Constants {
 
     public FileManager(CloudServiceConnectable connection) {
         this.connection = connection;
+        init();
         initUser();
     }
 
     private void init() {
         fileWriters = new ArrayList<FileWriter>();
-        File homePath = new File(HOME_PATH);
-        if (!homePath.exists()) {
-            homePath.mkdir();
+        File homeDir = new File(HOME_PATH);
+        if (!homeDir.exists()) {
+            homeDir.mkdir();
         }
     }
 
@@ -39,18 +40,20 @@ public class FileManager implements Constants {
             serverPath.mkdir();
         }
         String userPath = SERVER_PATH + "/" + userID;
-        currentDir = new File(userPath);
-        if (!currentDir.exists()) {
+        userDir = new File(userPath);
+        if (!userDir.exists()) {
             System.out.println("Creating a user directory.");
-            currentDir.mkdir();
+            userDir.mkdir();
         }
+        currentDir = new File(userPath);
     }
 
     private void initUser() {
-        currentDir = new File(CLIENT_PATH);
-        if (!currentDir.exists()) {
-            currentDir.mkdir();
+        userDir = new File(CLIENT_PATH);
+        if (!userDir.exists()) {
+            userDir.mkdir();
         }
+        currentDir = new File(CLIENT_PATH);
     }
 
     public File createFile(String filename) {
@@ -109,5 +112,41 @@ public class FileManager implements Constants {
 
     public File[] getFileArray() {
         return currentDir.listFiles();
+    }
+
+    public String getCurrentDir() {
+        if (currentDir.equals(userDir)) {
+            return ":\\";
+        } else {
+            String dir = ":\\" + currentDir.getPath().substring(userDir.getPath().length() + 1);
+            return dir;
+        }
+    }
+
+    public void sendCurrentDir() {
+        connection.send(NEW_CURRENT_SERVER_DIR + " " + getCurrentDir());
+    }
+
+    public void changeCurrentDir(String goToDir) {
+        File[] files = getFileArray();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].getName().equals(goToDir) && files[i].isDirectory()) {
+                currentDir = files[i];
+                if (userID != null) {
+                    sendCurrentDir();
+                    connection.send(getFileArray());
+                }
+            }
+        }
+    }
+
+    public void directoryUP() {
+        if (!currentDir.equals(userDir)) {
+            currentDir = new File(currentDir.getParent());
+            if (userID != null) {
+                sendCurrentDir();
+                connection.send(getFileArray());
+            }
+        }
     }
 }

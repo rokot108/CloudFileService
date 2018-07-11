@@ -4,9 +4,6 @@ import FileManager.FileManager;
 import Interfaces.Constants;
 import Interfaces.Server_API;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
 import java.io.File;
 
 public class Client implements Constants, Server_API {
@@ -20,24 +17,31 @@ public class Client implements Constants, Server_API {
     }
 
     void init() {
-        clientConnection = new ClientConnection();
+        clientConnection = new ClientConnection(this);
         fileManager = clientConnection.getFileManager();
-        window = new ClientWindow(this);
-        fillUserFileList();
+        window = new ClientWindow(this, fileManager);
+        window.fillUserFileList();
         Thread t = new Thread(clientConnection);
         t.start();
     }
 
-    public void fillUserFileList() {
-        fillFileList(window.getListModelUserFiles(), fileManager.getFileArray());
+    public void disconnect() {
+        clientConnection.disconnect();
     }
 
-    private void fillFileList(DefaultListModel model, File[] files) {
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory()) model.addElement(files[i]);
-        }
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isFile()) model.addElement(files[i]);
-        }
+    public void fillServerFileList(File[] files) {
+        window.fillServerFileList(files);
+    }
+
+    public void setServerCurrentDir(String serverCurrentDir) {
+        window.setServerCurrentDirLabel(serverCurrentDir);
+    }
+
+    public void requestServerDir(String directory) {
+        clientConnection.send(CHANGE_CURRENT_SERVER_DIR + " " + directory);
+    }
+
+    public void requestServerDir() {
+        clientConnection.send(UP_CURRENT_SERVER_DIR);
     }
 }
