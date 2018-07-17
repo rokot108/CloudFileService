@@ -33,15 +33,35 @@ public class Client implements Constants, Server_API {
         window.fillServerFileList(files);
     }
 
-    public void setServerCurrentDir(String serverCurrentDir) {
+    public void setServerCurrentDirLabel(String serverCurrentDir) {
         window.setServerCurrentDirLabel(serverCurrentDir);
     }
 
-    public void requestServerDir(String directory) {
-        clientConnection.send(CHANGE_CURRENT_SERVER_DIR + " " + directory);
+    public void changeCurrentServerDir(String directory) {
+        clientConnection.send(CHANGE_CURRENT_SERVER_DIR + STRING_SPLITTER + directory);
     }
 
-    public void requestServerDir() {
+    public void changeCurrentServerDir() {
         clientConnection.send(UP_CURRENT_SERVER_DIR);
+    }
+
+    public void sendFile(File file) {
+        if (file.isDirectory()) {
+            fileManager.sendDirectory(file.getName());
+        } else {
+            fileManager.splitAndSend(file.getName());
+        }
+    }
+
+    public void requestFile(String filename) {
+        clientConnection.send(FILE_REQUEST + STRING_SPLITTER + filename);
+    }
+
+    public void reqesFileDelete(String filename) {
+        clientConnection.send(DELETE_FILE + STRING_SPLITTER + filename);
+    }
+
+    public void requestAll() {
+        clientConnection.send(REQEST_ALL);
     }
 }

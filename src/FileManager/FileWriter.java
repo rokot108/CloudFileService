@@ -8,7 +8,7 @@ public class FileWriter implements Constants {
 
     private String filename;
     private FileManager fileManager;
-    FileOutputStream fos;
+    private FileOutputStream fos;
 
     public FileWriter(FileManager fileManager, FilePart filePart) {
         this.fileManager = fileManager;
@@ -18,7 +18,7 @@ public class FileWriter implements Constants {
     }
 
     private void init(String filename) {
-        File tmp = fileManager.createFile(filename);
+        File tmp = fileManager.createFile(filename, false);
         try {
             fos = new FileOutputStream(tmp, true);
         } catch (FileNotFoundException e) {

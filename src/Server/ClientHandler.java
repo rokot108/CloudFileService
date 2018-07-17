@@ -32,7 +32,7 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
     @Override
     public void run() {
         send(fileManager.getFileArray());
-        send(fileManager.getCurrentDir());
+        fileManager.sendCurrentDirName();
         while (true) {
             try {
                 Object request;
@@ -40,6 +40,7 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                     request = in.readObject();
                     if (request instanceof FilePart) {
                         fileManager.writeSplitedFile((FilePart) request);
+                        send(fileManager.getFileArray());
                     }
                     if (request instanceof String) {
                         String tmp = (String) request;
@@ -49,14 +50,27 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                         }
                         if (tmp.startsWith(FILE_REQUEST)) {
                             String[] commands = tmp.split(STRING_SPLITTER, 2);
-                            fileManager.splitAndSend(commands[1]);
+                            fileManager.sendAFile(commands[1]);
                         }
                         if (tmp.startsWith(CHANGE_CURRENT_SERVER_DIR)) {
-                            String[] req = tmp.split(" ");
+                            String[] req = tmp.split(STRING_SPLITTER);
                             fileManager.changeCurrentDir(req[1]);
                         }
                         if (tmp.startsWith(UP_CURRENT_SERVER_DIR)) {
                             fileManager.directoryUP();
+                        }
+                        if (tmp.startsWith(CREATE_NEW_DIR)) {
+                            String[] req = tmp.split(STRING_SPLITTER, 2);
+                            fileManager.createFile(req[1], true);
+                            send(fileManager.getFileArray());
+                        }
+                        if (tmp.startsWith(DELETE_FILE)) {
+                            String[] req = tmp.split(STRING_SPLITTER, 2);
+                            fileManager.deleteFile(req[1]);
+                            send(fileManager.getFileArray());
+                        }
+                        if (tmp.startsWith(REQEST_ALL)) {
+                            fileManager.sendAll();
                         }
                     }
                 }

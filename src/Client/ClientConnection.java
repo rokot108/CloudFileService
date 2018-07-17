@@ -86,8 +86,13 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
                     disconnect();
                 }
                 if (tmp.startsWith(NEW_CURRENT_SERVER_DIR)) {
-                    String[] req = tmp.split(" ");
-                    client.setServerCurrentDir(req[1]);
+                    String[] req = tmp.split(STRING_SPLITTER, 2);
+                    client.setServerCurrentDirLabel(req[1]);
+                }
+                if (tmp.startsWith(CREATE_NEW_DIR)) {
+                    String[] req = tmp.split(STRING_SPLITTER, 2);
+                    fileManager.createFile(req[1], true);
+                    client.window.fillUserFileList();
                 }
             }
         }

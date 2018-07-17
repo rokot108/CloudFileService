@@ -16,17 +16,22 @@ public class ClientWindow extends JFrame {
     private JPanel jPanelTop;
     private JPanel jPanelTopLeft;
     private JPanel jPanelTopLeftTop;
+    private JPanel jPanelTopLeftButtons;
+    private JButton changeUserDirBtn;
+    private JButton renewUserFilesListBtn;
+    private JButton userDirUpBtn;
     private JPanel jPanelTopLeftBottom;
     private JPanel jPanelTopCenter;
     private JPanel jPanelTopCenterButtons;
     private JPanel jPanelTopRight;
     private JPanel jPanelTopRightTop;
+    private JPanel jPanelTopRightButtons;
+    private JButton renewServerFilesListBtn;
+    private JButton serverDirUpBtn;
     private JPanel jPanelTopRightBottom;
     private JPanel jPanelBottom;
     private JLabel userCurrentDirLabel;
     private JLabel serverCurrentDirLabel;
-    private JButton userDirUpBtn;
-    private JButton serverDirUpBtn;
     private JList userFilesJList;
     private JList serverFilesJList;
     private JButton userOpenBtn;
@@ -63,11 +68,9 @@ public class ClientWindow extends JFrame {
         GridBagConstraints c = new GridBagConstraints();
 
         jPanelTop = new JPanel(new FlowLayout(FlowLayout.TRAILING));
-        jPanelTop.setBackground(Color.cyan);
         add(jPanelTop);
 
         jPanelBottom = new JPanel(new GridBagLayout());
-        jPanelBottom.setBackground(Color.BLACK);
 
         c.anchor = GridBagConstraints.SOUTH;
         c.fill = GridBagConstraints.BOTH;
@@ -85,26 +88,51 @@ public class ClientWindow extends JFrame {
         add(jPanelBottom);
 
         jPanelTopLeft = new JPanel(new BorderLayout());
-        jPanelTopLeft.setBackground(Color.GREEN);
         jPanelTopLeft.setMinimumSize(new Dimension(200, 225));
         jPanelTopLeft.setPreferredSize(new Dimension(250, 300));
 
-        jPanelTopLeftTop = new JPanel(new FlowLayout());
+        jPanelTopLeftTop = new JPanel(new BorderLayout());
+        jPanelTopLeftButtons = new JPanel(new FlowLayout());
+
+        changeUserDirBtn = new JButton();
+        changeUserDirBtn.setIcon(UIManager.getIcon("Tree.closedIcon"));
+        changeUserDirBtn.setMargin(new Insets(0, 0, 0, 0));
+        jPanelTopLeftButtons.add(changeUserDirBtn);
+
+        changeUserDirBtn.addActionListener(e -> {
+            JFileChooser dirChoose = new JFileChooser();
+            dirChoose.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int ret = dirChoose.showDialog(null, "Select");
+            fileManager.setUserDir(dirChoose.getSelectedFile());
+            fillUserFileList();
+        });
+
+        renewUserFilesListBtn = new JButton();
+        renewUserFilesListBtn.setIcon(UIManager.getIcon(""));
+        renewUserFilesListBtn.setMargin(new Insets(0, 0, 0, 0));
+        renewUserFilesListBtn.addActionListener(e -> {
+            fillUserFileList();
+        });
+        jPanelTopLeftButtons.add(renewUserFilesListBtn);
+
         userDirUpBtn = new JButton("↰");
-        userDirUpBtn.setToolTipText("Directory UP");
-        userDirUpBtn.setMargin(new Insets(3, 1, 3, 1));
-        jPanelTopLeftTop.add(userDirUpBtn);
+        userDirUpBtn.setIcon(UIManager.getIcon("FileChooser.upFolderIcon"));
+        userDirUpBtn.setMargin(new Insets(0, 0, 0, 0));
+        jPanelTopLeftButtons.add(userDirUpBtn);
+        jPanelTopLeftTop.add(jPanelTopLeftButtons, BorderLayout.WEST);
 
         userDirUpBtn.addActionListener((e) -> {
                     fileManager.directoryUP();
                     fillUserFileList();
-                    userCurrentDirLabel.setText(fileManager.getCurrentDir());
+                    userCurrentDirLabel.setText(":\\" + fileManager.getRelativePath(fileManager.getCurrentDir(), false));
+                    reDraw();
                 }
         );
 
         userCurrentDirLabel = new JLabel();
-        userCurrentDirLabel.setText(fileManager.getCurrentDir());
-        jPanelTopLeftTop.add(userCurrentDirLabel);
+        userCurrentDirLabel.setHorizontalAlignment(JLabel.CENTER);
+        userCurrentDirLabel.setText(":\\" + fileManager.getRelativePath(fileManager.getCurrentDir(), false));
+        jPanelTopLeftTop.add(userCurrentDirLabel, BorderLayout.CENTER);
         jPanelTopLeft.add(jPanelTopLeftTop, BorderLayout.NORTH);
 
         cellRenderer = new CellRenderer();
@@ -124,16 +152,23 @@ public class ClientWindow extends JFrame {
 
         jPanelTopLeftBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
         userOpenBtn = new JButton("Open");
-        JButton userDelete = new JButton("Delete");
         jPanelTopLeftBottom.add(userOpenBtn);
+        userOpenBtn.setToolTipText("Open a direcrory");
         userOpenBtn.addActionListener((e) -> {
             File openDir = (File) userFilesJList.getSelectedValue();
             if (openDir.isDirectory()) {
                 fileManager.changeCurrentDir(openDir.getName());
                 fillUserFileList();
-                userCurrentDirLabel.setText(fileManager.getCurrentDir());
+                userCurrentDirLabel.setText(":\\" + fileManager.getRelativePath(fileManager.getCurrentDir(), false));
                 reDraw();
             }
+        });
+
+        JButton userDelete = new JButton("Delete");
+        userDelete.addActionListener((e) -> {
+            File tmp = (File) userFilesJList.getSelectedValue();
+            fileManager.deleteFile(tmp.getName());
+            fillUserFileList();
         });
 
         jPanelTopLeftBottom.add(userDelete);
@@ -157,45 +192,61 @@ public class ClientWindow extends JFrame {
         sendAll.setPreferredSize(new Dimension(50, 50));
         sendAll.setToolTipText("Send All");
         jPanelTopCenterButtons.add(sendAll);
+        sendAll.addActionListener(e -> {
+                    fileManager.sendAll();
+                }
+        );
 
         JButton send = new JButton(">");
         send.setPreferredSize(new Dimension(50, 50));
         send.setToolTipText("Send");
         jPanelTopCenterButtons.add(send);
 
+        send.addActionListener((e) -> {
+            client.sendFile((File) userFilesJList.getSelectedValue());
+        });
+
         JButton request = new JButton("<");
         request.setPreferredSize(new Dimension(50, 50));
         request.setToolTipText("Download");
         jPanelTopCenterButtons.add(request);
+
+        request.addActionListener((e) -> {
+            File tmp = (File) serverFilesJList.getSelectedValue();
+            client.requestFile(tmp.getName());
+        });
 
         JButton requestAll = new JButton("<<");
         requestAll.setPreferredSize(new Dimension(50, 50));
         requestAll.setToolTipText("Download All");
         jPanelTopCenterButtons.add(requestAll);
 
-        jPanelTopCenter.setBackground(Color.YELLOW);
+        requestAll.addActionListener(e -> {
+            client.requestAll();
+        });
+
         jPanelTopCenter.add(jPanelTopCenterButtons);
 
         jPanelTop.add(jPanelTopCenter, FlowLayout.CENTER);
 
         jPanelTopRight = new JPanel(new BorderLayout());
-        jPanelTopRight.setBackground(Color.RED);
         jPanelTopRight.setMinimumSize(new Dimension(200, 225));
         jPanelTopRight.setPreferredSize(new Dimension(250, 300));
 
-        jPanelTopRightTop = new JPanel(new FlowLayout());
+        jPanelTopRightTop = new JPanel(new BorderLayout());
         serverDirUpBtn = new JButton("↰");
         serverDirUpBtn.setToolTipText("Directory UP");
         serverDirUpBtn.setMargin(new Insets(3, 1, 3, 1));
-        jPanelTopRightTop.add(serverDirUpBtn);
+        jPanelTopRightTop.add(serverDirUpBtn, BorderLayout.WEST);
 
         serverDirUpBtn.addActionListener((e) -> {
-            client.requestServerDir();
+            client.changeCurrentServerDir();
         });
 
         serverCurrentDirLabel = new JLabel();
+        serverCurrentDirLabel.setHorizontalAlignment(JLabel.CENTER);
         serverCurrentDirLabel.setText(":\\");
-        jPanelTopRightTop.add(serverCurrentDirLabel);
+        jPanelTopRightTop.add(serverCurrentDirLabel, BorderLayout.CENTER);
         jPanelTopRight.add(jPanelTopRightTop, BorderLayout.NORTH);
 
         listModelServerFiles = new DefaultListModel();
@@ -213,15 +264,20 @@ public class ClientWindow extends JFrame {
 
         jPanelTopRightBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
         serverOpenBtn = new JButton("Open");
-
+        serverOpenBtn.setToolTipText("Open a direcrory");
         serverOpenBtn.addActionListener((e) -> {
             File openDir = (File) serverFilesJList.getSelectedValue();
             if (openDir.isDirectory()) {
-                client.requestServerDir(openDir.getName());
+                client.changeCurrentServerDir(openDir.getName());
             }
         });
 
         JButton serverDelete = new JButton("Delete");
+        serverDelete.addActionListener((e) -> {
+            File tmp = (File) serverFilesJList.getSelectedValue();
+            client.reqesFileDelete(tmp.getName());
+        });
+
         jPanelTopRightBottom.add(serverOpenBtn);
         jPanelTopRightBottom.add(serverDelete);
         serverOpenBtn.setSize(serverDelete.getSize());
@@ -241,6 +297,7 @@ public class ClientWindow extends JFrame {
 
     public void fillServerFileList(File[] files) {
         fillFileList(listModelServerFiles, files);
+        serverFilesJList.requestFocusInWindow();
     }
 
     private void fillFileList(DefaultListModel model, File[] files) {
@@ -271,6 +328,6 @@ public class ClientWindow extends JFrame {
     }
 
     public void setServerCurrentDirLabel(String serverCurrentDirLabel) {
-        this.serverCurrentDirLabel.setText(serverCurrentDirLabel);
+        this.serverCurrentDirLabel.setText(":\\" + serverCurrentDirLabel);
     }
 }
