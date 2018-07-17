@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URL;
 
 public class ClientWindow extends JFrame {
 
@@ -18,7 +19,7 @@ public class ClientWindow extends JFrame {
     private JPanel jPanelTopLeftTop;
     private JPanel jPanelTopLeftButtons;
     private JButton changeUserDirBtn;
-    private JButton renewUserFilesListBtn;
+    private JButton refreshUserFilesListBtn;
     private JButton userDirUpBtn;
     private JPanel jPanelTopLeftBottom;
     private JPanel jPanelTopCenter;
@@ -26,7 +27,7 @@ public class ClientWindow extends JFrame {
     private JPanel jPanelTopRight;
     private JPanel jPanelTopRightTop;
     private JPanel jPanelTopRightButtons;
-    private JButton renewServerFilesListBtn;
+    private JButton refreshServerFilesListBtn;
     private JButton serverDirUpBtn;
     private JPanel jPanelTopRightBottom;
     private JPanel jPanelBottom;
@@ -35,7 +36,9 @@ public class ClientWindow extends JFrame {
     private JList userFilesJList;
     private JList serverFilesJList;
     private JButton userOpenBtn;
+    private JButton userDeleteBtn;
     private JButton serverOpenBtn;
+    private JButton serverDeleteBtn;
     private DefaultListModel listModelUserFiles;
     private DefaultListModel listModelServerFiles;
     private CellRenderer cellRenderer;
@@ -45,7 +48,12 @@ public class ClientWindow extends JFrame {
         this.client = client;
         this.fileManager = fileManager;
 
+        ImageIcon refreshIcon = createIcon("images\\refresh20.png");
+        ImageIcon deleteIcon = createIcon("images\\delete16.png");
+        Image cloudIcon = createIcon("images\\cloud20.png").getImage();
+
         setTitle("Cloud File Service");
+        setIconImage(cloudIcon);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(500, 500);
         setLocationRelativeTo(null);
@@ -96,7 +104,8 @@ public class ClientWindow extends JFrame {
 
         changeUserDirBtn = new JButton();
         changeUserDirBtn.setIcon(UIManager.getIcon("Tree.closedIcon"));
-        changeUserDirBtn.setMargin(new Insets(0, 0, 0, 0));
+        changeUserDirBtn.setToolTipText("Open another directory");
+        changeUserDirBtn.setMargin(new Insets(1, 0, 1, 0));
         jPanelTopLeftButtons.add(changeUserDirBtn);
 
         changeUserDirBtn.addActionListener(e -> {
@@ -107,17 +116,23 @@ public class ClientWindow extends JFrame {
             fillUserFileList();
         });
 
-        renewUserFilesListBtn = new JButton();
-        renewUserFilesListBtn.setIcon(UIManager.getIcon(""));
-        renewUserFilesListBtn.setMargin(new Insets(0, 0, 0, 0));
-        renewUserFilesListBtn.addActionListener(e -> {
+        refreshUserFilesListBtn = new JButton();
+        refreshUserFilesListBtn.setToolTipText("Refresh filelist");
+        refreshUserFilesListBtn.setMargin(new Insets(0, 0, 0, 0));
+        refreshUserFilesListBtn.setIcon(refreshIcon);
+        refreshUserFilesListBtn.addActionListener(e -> {
             fillUserFileList();
         });
-        jPanelTopLeftButtons.add(renewUserFilesListBtn);
+        jPanelTopLeftButtons.add(refreshUserFilesListBtn);
 
-        userDirUpBtn = new JButton("↰");
+        refreshUserFilesListBtn.addActionListener(e -> {
+            fillUserFileList();
+        });
+
+        userDirUpBtn = new JButton();
         userDirUpBtn.setIcon(UIManager.getIcon("FileChooser.upFolderIcon"));
-        userDirUpBtn.setMargin(new Insets(0, 0, 0, 0));
+        userDirUpBtn.setToolTipText("Directory UP");
+        userDirUpBtn.setMargin(new Insets(1, 0, 1, 0));
         jPanelTopLeftButtons.add(userDirUpBtn);
         jPanelTopLeftTop.add(jPanelTopLeftButtons, BorderLayout.WEST);
 
@@ -152,6 +167,7 @@ public class ClientWindow extends JFrame {
 
         jPanelTopLeftBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
         userOpenBtn = new JButton("Open");
+        userOpenBtn.setIcon(UIManager.getIcon("Tree.closedIcon"));
         jPanelTopLeftBottom.add(userOpenBtn);
         userOpenBtn.setToolTipText("Open a direcrory");
         userOpenBtn.addActionListener((e) -> {
@@ -164,15 +180,17 @@ public class ClientWindow extends JFrame {
             }
         });
 
-        JButton userDelete = new JButton("Delete");
-        userDelete.addActionListener((e) -> {
+        userDeleteBtn = new JButton("Delete");
+        userDeleteBtn.setToolTipText("Delete from your PC");
+        userDeleteBtn.setIcon(deleteIcon);
+        userDeleteBtn.addActionListener((e) -> {
             File tmp = (File) userFilesJList.getSelectedValue();
             fileManager.deleteFile(tmp.getName());
             fillUserFileList();
         });
 
-        jPanelTopLeftBottom.add(userDelete);
-        userOpenBtn.setSize(userDelete.getSize());
+        jPanelTopLeftBottom.add(userDeleteBtn);
+        userOpenBtn.setSize(userDeleteBtn.getSize());
         jPanelTopLeft.add(jPanelTopLeftBottom, BorderLayout.SOUTH);
 
         jPanelTop.add(jPanelTopLeft, FlowLayout.LEFT);
@@ -186,7 +204,6 @@ public class ClientWindow extends JFrame {
         jPanelTopCenterButtons.setLayout(new FlowLayout(FlowLayout.CENTER));
         jPanelTopCenterButtons.setAlignmentX(JComponent.CENTER_ALIGNMENT);
         jPanelTopCenterButtons.setAlignmentY(JComponent.CENTER_ALIGNMENT);
-
 
         JButton sendAll = new JButton(">>");
         sendAll.setPreferredSize(new Dimension(50, 50));
@@ -234,14 +251,29 @@ public class ClientWindow extends JFrame {
         jPanelTopRight.setPreferredSize(new Dimension(250, 300));
 
         jPanelTopRightTop = new JPanel(new BorderLayout());
-        serverDirUpBtn = new JButton("↰");
+        jPanelTopRightButtons = new JPanel(new FlowLayout());
+
+        refreshServerFilesListBtn = new JButton();
+        refreshServerFilesListBtn.setToolTipText("Refresh filelist");
+        refreshServerFilesListBtn.setMargin(new Insets(0, 0, 0, 0));
+        refreshServerFilesListBtn.setIcon(refreshIcon);
+        jPanelTopRightButtons.add(refreshServerFilesListBtn);
+
+        refreshServerFilesListBtn.addActionListener(e -> {
+            client.requestForRefresh();
+        });
+
+        serverDirUpBtn = new JButton();
+        serverDirUpBtn.setIcon(UIManager.getIcon("FileChooser.upFolderIcon"));
         serverDirUpBtn.setToolTipText("Directory UP");
-        serverDirUpBtn.setMargin(new Insets(3, 1, 3, 1));
-        jPanelTopRightTop.add(serverDirUpBtn, BorderLayout.WEST);
+        serverDirUpBtn.setMargin(new Insets(1, 0, 1, 0));
+        jPanelTopRightButtons.add(serverDirUpBtn);
 
         serverDirUpBtn.addActionListener((e) -> {
             client.changeCurrentServerDir();
         });
+
+        jPanelTopRightTop.add(jPanelTopRightButtons, BorderLayout.WEST);
 
         serverCurrentDirLabel = new JLabel();
         serverCurrentDirLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -265,6 +297,7 @@ public class ClientWindow extends JFrame {
         jPanelTopRightBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
         serverOpenBtn = new JButton("Open");
         serverOpenBtn.setToolTipText("Open a direcrory");
+        serverOpenBtn.setIcon(UIManager.getIcon("Tree.closedIcon"));
         serverOpenBtn.addActionListener((e) -> {
             File openDir = (File) serverFilesJList.getSelectedValue();
             if (openDir.isDirectory()) {
@@ -272,15 +305,17 @@ public class ClientWindow extends JFrame {
             }
         });
 
-        JButton serverDelete = new JButton("Delete");
-        serverDelete.addActionListener((e) -> {
+        serverDeleteBtn = new JButton("Delete");
+        serverDeleteBtn.setToolTipText("Delete from a cloud");
+        serverDeleteBtn.setIcon(deleteIcon);
+        serverDeleteBtn.addActionListener((e) -> {
             File tmp = (File) serverFilesJList.getSelectedValue();
             client.reqesFileDelete(tmp.getName());
         });
 
         jPanelTopRightBottom.add(serverOpenBtn);
-        jPanelTopRightBottom.add(serverDelete);
-        serverOpenBtn.setSize(serverDelete.getSize());
+        jPanelTopRightBottom.add(serverDeleteBtn);
+        serverOpenBtn.setSize(serverDeleteBtn.getSize());
         jPanelTopRight.add(jPanelTopRightBottom, BorderLayout.SOUTH);
 
         jPanelTop.add(jPanelTopRight, FlowLayout.RIGHT);
@@ -325,9 +360,26 @@ public class ClientWindow extends JFrame {
         if (serverSelectedFile != null && serverSelectedFile.isDirectory()) {
             serverOpenBtn.setEnabled(true);
         } else serverOpenBtn.setEnabled(false);
+        if (userSelectedFile == null) {
+            userDeleteBtn.setEnabled(false);
+        } else userDeleteBtn.setEnabled(true);
+        if (serverSelectedFile == null) {
+            serverDeleteBtn.setEnabled(false);
+        } else serverDeleteBtn.setEnabled(true);
+
     }
 
     public void setServerCurrentDirLabel(String serverCurrentDirLabel) {
         this.serverCurrentDirLabel.setText(":\\" + serverCurrentDirLabel);
+    }
+
+    protected static ImageIcon createIcon(String path) {
+        URL imgURL = ClientWindow.class.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Icon image file not found " + path);
+            return null;
+        }
     }
 }

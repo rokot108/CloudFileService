@@ -64,4 +64,8 @@ public class Client implements Constants, Server_API {
     public void requestAll() {
         clientConnection.send(REQEST_ALL);
     }
+
+    public void requestForRefresh() {
+        clientConnection.send(REFRESH);
+    }
 }

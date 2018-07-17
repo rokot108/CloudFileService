@@ -72,6 +72,9 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                         if (tmp.startsWith(REQEST_ALL)) {
                             fileManager.sendAll();
                         }
+                        if (tmp.startsWith(REFRESH)) {
+                            send(fileManager.getFileArray());
+                        }
                     }
                 }
             } catch (IOException e) {

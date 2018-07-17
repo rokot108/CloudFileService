@@ -13,4 +13,5 @@ public interface Server_API {
     String UP_CURRENT_SERVER_DIR = "/updir";
     String CREATE_NEW_DIR = "/mkdir";
     String DELETE_FILE = "/del";
+    String REFRESH = "/ref";
 }
