@@ -19,14 +19,14 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
     private boolean authorised;
 
 
-    public AuthorisationManager(String userLogin, int userPassHash) {
+    public AuthorisationManager() {
 
         if (usersListFile == null) {
             init();
         }
 
-        this.userLogin = userLogin;
-        this.userPassHash = userPassHash;
+        this.userLogin = null;
+        this.userPassHash = 000;
         authorised = false;
         feedbackMessage = "AuthService is ready";
     }
@@ -57,6 +57,18 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
         }
     }
 
+    public void setUserLogin(String userLogin) {
+        this.userLogin = userLogin;
+    }
+
+    public void setUserPassHash(int userPassHash) {
+        this.userPassHash = userPassHash;
+    }
+
+    public String getUserLogin() {
+        return userLogin;
+    }
+
     @Override
     public boolean register() {
         return register(userLogin, userPassHash);
@@ -71,7 +83,7 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
         }
         users.add(new UserAccount(login, userPassHash));
         if (saveUsersList()) {
-            feedbackMessage = "Registration success";
+            feedbackMessage = "Registration success, logged in as " + login + ".";
             authorised = true;
             return true;
         } else {
@@ -97,7 +109,7 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
     private boolean login(String login, int passHash) {
         for (UserAccount user : users) {
             if (user.getUsername() == login && user.getPassHash() == passHash) {
-                feedbackMessage = "Logged in successfully";
+                feedbackMessage = "Logged in successfully as " + login + ".";
                 authorised = true;
                 return true;
             }

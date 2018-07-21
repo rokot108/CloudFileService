@@ -7,13 +7,13 @@ import Interfaces.*;
 
 public class FileManager implements Constants, Server_API {
 
-    private String userID;
+    private Integer userID;
     private File userDir;
     private File currentDir;
     CloudServiceConnectable connection;
     ArrayList<FileWriter> fileWriters;
 
-    public FileManager(String userID, CloudServiceConnectable connection) {
+    public FileManager(int userID, CloudServiceConnectable connection) {
         this.connection = connection;
         this.userID = userID;
         init();
@@ -39,7 +39,7 @@ public class FileManager implements Constants, Server_API {
         if (!serverPath.exists()) {
             serverPath.mkdir();
         }
-        String userPath = SERVER_PATH + "/" + userID;
+        String userPath = SERVER_PATH + "/" + userID.toString();
         userDir = new File(userPath);
         if (!userDir.exists()) {
             System.out.println("Creating a user directory.");
@@ -168,10 +168,6 @@ public class FileManager implements Constants, Server_API {
         for (int i = 0; i < files.length; i++) {
             if (files[i].getName().equals(goToDir) && files[i].isDirectory()) {
                 currentDir = files[i];
-                if (userID != null) {
-                    sendCurrentDirName();
-                    connection.send(getFileArray());
-                }
             }
         }
     }
@@ -179,10 +175,6 @@ public class FileManager implements Constants, Server_API {
     public void directoryUP() {
         if (!currentDir.equals(userDir)) {
             currentDir = new File(currentDir.getParent());
-            if (userID != null) {
-                sendCurrentDirName();
-                connection.send(getFileArray());
-            }
         }
     }
 
