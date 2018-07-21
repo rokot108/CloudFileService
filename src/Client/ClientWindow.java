@@ -30,7 +30,6 @@ public class ClientWindow extends JFrame {
     private JButton refreshServerFilesListBtn;
     private JButton serverDirUpBtn;
     private JPanel jPanelTopRightBottom;
-    private JPanel jPanelBottom;
     private JLabel userCurrentDirLabel;
     private JLabel serverCurrentDirLabel;
     private JList userFilesJList;
@@ -42,7 +41,17 @@ public class ClientWindow extends JFrame {
     private DefaultListModel listModelUserFiles;
     private DefaultListModel listModelServerFiles;
     private CellRenderer cellRenderer;
-
+    private JPanel jPanelBottom;
+    private JLabel serverMsgLabel;
+    private JPanel jPanelAuthPanel;
+    private Container authLeftCont;
+    private Container authRightCont;
+    private JTextField loginTxtField;
+    private JTextField passwordTxtField;
+    private ButtonGroup authOptionsGroup;
+    private JRadioButton loinRBtn;
+    private JRadioButton registerRBtn;
+    private JButton okBtn;
 
     public ClientWindow(Client client, FileManager fileManager) {
         this.client = client;
@@ -71,29 +80,11 @@ public class ClientWindow extends JFrame {
             }
         });
 
-        GridBagLayout gbAll = new GridBagLayout();
-        setLayout(gbAll);
-        GridBagConstraints c = new GridBagConstraints();
+        setLayout(new FlowLayout());
 
         jPanelTop = new JPanel(new FlowLayout(FlowLayout.TRAILING));
         add(jPanelTop);
 
-        jPanelBottom = new JPanel(new GridBagLayout());
-
-        c.anchor = GridBagConstraints.SOUTH;
-        c.fill = GridBagConstraints.BOTH;
-        c.gridheight = 1;
-        c.gridwidth = 1;
-        c.gridx = 0;
-        c.gridy = 1;
-        c.insets = new Insets(2, 5, 5, 5);
-        c.ipadx = 0;
-        c.ipady = 0;
-        c.weightx = 1;
-        c.weighty = 0.3;
-
-        gbAll.setConstraints(jPanelBottom, c);
-        add(jPanelBottom);
 
         jPanelTopLeft = new JPanel(new BorderLayout());
         jPanelTopLeft.setMinimumSize(new Dimension(200, 225));
@@ -320,6 +311,53 @@ public class ClientWindow extends JFrame {
 
         jPanelTop.add(jPanelTopRight, FlowLayout.RIGHT);
 
+        jPanelBottom = new JPanel(new BorderLayout());
+        serverMsgLabel = new JLabel("Please, authorise:");
+        jPanelBottom.add(serverMsgLabel, BorderLayout.NORTH);
+
+        jPanelAuthPanel = new JPanel(new FlowLayout());
+        authOptionsGroup = new ButtonGroup();
+
+        authLeftCont = new Container();
+        authLeftCont.setLayout(new BoxLayout(authLeftCont, BoxLayout.Y_AXIS));
+        authLeftCont.add(new JLabel("Login:"));
+        loginTxtField = new JTextField(15);
+        authLeftCont.add(loginTxtField);
+        loinRBtn = new JRadioButton("Login");
+        authOptionsGroup.add(loinRBtn);
+        loinRBtn.setEnabled(true);
+        authLeftCont.add(loinRBtn);
+        jPanelAuthPanel.add(authLeftCont);
+
+        authRightCont = new Container();
+        authRightCont.setLayout(new BoxLayout(authRightCont, BoxLayout.Y_AXIS));
+        authRightCont.add(new JLabel("Password:"));
+        passwordTxtField = new JTextField(15);
+        authRightCont.add(passwordTxtField);
+        registerRBtn = new JRadioButton("Register");
+        authOptionsGroup.add(registerRBtn);
+        authRightCont.add(registerRBtn);
+        jPanelAuthPanel.add(authRightCont);
+
+        jPanelBottom.add(jPanelAuthPanel, BorderLayout.CENTER);
+
+        okBtn = new JButton("OK");
+        jPanelBottom.add(okBtn, BorderLayout.SOUTH);
+
+        okBtn.addActionListener(e -> {
+            String login = loginTxtField.getText();
+            String pass = passwordTxtField.getText();
+            AuthActions action;
+            if (loinRBtn.isSelected()) {
+                action = AuthActions.LOGIN;
+            } else action = AuthActions.REGISTER;
+            if (login.length() != 0 && pass.length() != 0) {
+                client.authAction(action, login, pass);
+            }
+        });
+
+        add(jPanelBottom);
+
         reDraw();
         setVisible(true);
     }
@@ -381,5 +419,9 @@ public class ClientWindow extends JFrame {
             System.err.println("Icon image file not found " + path);
             return null;
         }
+    }
+
+    public void setServerMsgLabel(String serverMsg) {
+        serverMsgLabel.setText(serverMsg);
     }
 }

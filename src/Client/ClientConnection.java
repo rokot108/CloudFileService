@@ -8,7 +8,6 @@ import java.net.Socket;
 
 public class ClientConnection implements Constants, Server_API, Runnable, CloudServiceConnectable {
 
-    String ClientID = "0001";
     Socket socket;
     ObjectOutputStream out;
     ObjectInputStream in;
@@ -82,6 +81,10 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
             }
             if (request instanceof String) {
                 String tmp = (String) request;
+                if (tmp.startsWith(AUTH_MSG)) {
+                    String[] req = tmp.split(STRING_SPLITTER, 2);
+                    client.showMsg(req[1]);
+                }
                 if (tmp.startsWith(CLOSE_CONNECTION)) {
                     disconnect();
                 }

@@ -45,7 +45,6 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                                 authmgr.setUserPassHash(Integer.parseInt(commands[2]));
                                 authmgr.login();
                             }
-                            send(AUTH_MSG + STRING_SPLITTER + authmgr.getFeedbackMessage());
                         }
                         if (tmp.startsWith(REGISTRATION)) {
                             String[] commands = tmp.split(STRING_SPLITTER, 3);
@@ -54,9 +53,9 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                                 authmgr.setUserPassHash(Integer.parseInt(commands[2]));
                                 authmgr.register();
                             }
-                            send(AUTH_MSG + STRING_SPLITTER + authmgr.getFeedbackMessage());
                         }
                     }
+                        send(AUTH_MSG + STRING_SPLITTER + authmgr.getFeedbackMessage());
                 }
 
                 this.fileManager = new FileManager(authmgr.getUserLogin().hashCode(), this);

@@ -68,4 +68,21 @@ public class Client implements Constants, Server_API {
     public void requestForRefresh() {
         clientConnection.send(REFRESH);
     }
+
+    public void authAction(AuthActions action, String login, String pass) {
+        switch (action) {
+            case LOGIN: {
+                clientConnection.send(AUTH + STRING_SPLITTER + login + STRING_SPLITTER + pass.hashCode());
+                break;
+            }
+            case REGISTER: {
+                clientConnection.send(REGISTRATION + STRING_SPLITTER + login + STRING_SPLITTER + pass.hashCode());
+                break;
+            }
+        }
+    }
+
+    public void showMsg(String serverMsg) {
+        window.setServerMsgLabel(serverMsg);
+    }
 }

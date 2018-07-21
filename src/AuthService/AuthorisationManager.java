@@ -40,17 +40,15 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
                 }
                 fos = new FileOutputStream(usersListFile, false);
                 obos = new ObjectOutputStream(fos);
-                if (usersListFile.length() != 0) {
-                    fis = new FileInputStream(usersListFile);
-                    obis = new ObjectInputStream(fis);
+                fis = new FileInputStream(usersListFile);
+                obis = new ObjectInputStream(fis);
+                try {
                     users = (Vector<UserAccount>) obis.readObject();
-                    obis.close();
-                    fis.close();
-                } else {
+                } catch (Exception e) {
                     users = new Vector<>();
                 }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                obis.close();
+                fis.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
