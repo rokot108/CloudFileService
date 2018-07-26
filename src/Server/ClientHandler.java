@@ -54,8 +54,12 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                                 authmgr.register();
                             }
                         }
+                        if (tmp.startsWith(CLOSE_CONNECTION)) {
+                            disconnect();
+                            return;
+                        }
                     }
-                        send(AUTH_MSG + STRING_SPLITTER + authmgr.getFeedbackMessage());
+                    send(AUTH_MSG + STRING_SPLITTER + authmgr.getFeedbackMessage());
                 }
 
                 this.fileManager = new FileManager(authmgr.getUserLogin().hashCode(), this);

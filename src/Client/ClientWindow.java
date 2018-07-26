@@ -49,7 +49,7 @@ public class ClientWindow extends JFrame {
     private JTextField loginTxtField;
     private JTextField passwordTxtField;
     private ButtonGroup authOptionsGroup;
-    private JRadioButton loinRBtn;
+    private JRadioButton loginRBtn;
     private JRadioButton registerRBtn;
     private JButton okBtn;
 
@@ -323,10 +323,10 @@ public class ClientWindow extends JFrame {
         authLeftCont.add(new JLabel("Login:"));
         loginTxtField = new JTextField(15);
         authLeftCont.add(loginTxtField);
-        loinRBtn = new JRadioButton("Login");
-        authOptionsGroup.add(loinRBtn);
-        loinRBtn.setEnabled(true);
-        authLeftCont.add(loinRBtn);
+        loginRBtn = new JRadioButton("Login");
+        authOptionsGroup.add(loginRBtn);
+        loginRBtn.setSelected(true);
+        authLeftCont.add(loginRBtn);
         jPanelAuthPanel.add(authLeftCont);
 
         authRightCont = new Container();
@@ -348,7 +348,7 @@ public class ClientWindow extends JFrame {
             String login = loginTxtField.getText();
             String pass = passwordTxtField.getText();
             AuthActions action;
-            if (loinRBtn.isSelected()) {
+            if (loginRBtn.isSelected()) {
                 action = AuthActions.LOGIN;
             } else action = AuthActions.REGISTER;
             if (login.length() != 0 && pass.length() != 0) {

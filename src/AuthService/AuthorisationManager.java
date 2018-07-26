@@ -18,10 +18,9 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
     private String feedbackMessage;
     private boolean authorised;
 
-
     public AuthorisationManager() {
 
-        if (usersListFile == null) {
+        if (users == null) {
             init();
         }
 
@@ -32,23 +31,27 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
     }
 
     private static synchronized void init() {
-        if (usersListFile == null) {
+        if (users == null) {
+            users = new Vector<>();
             usersListFile = new File(SERVER_PATH + "\\" + USERS_DATA_BASE);
             try {
-                if (!usersListFile.exists()) {
+                if (usersListFile.exists()) {
+                    fis = new FileInputStream(usersListFile);
+                    obis = new ObjectInputStream(fis);
+                    while (fis.available() != 0) {
+                        users.add((UserAccount) obis.readObject());
+                    }
+                } else {
                     usersListFile.createNewFile();
                 }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
                 fos = new FileOutputStream(usersListFile, false);
                 obos = new ObjectOutputStream(fos);
-                fis = new FileInputStream(usersListFile);
-                obis = new ObjectInputStream(fis);
-                try {
-                    users = (Vector<UserAccount>) obis.readObject();
-                } catch (Exception e) {
-                    users = new Vector<>();
-                }
-                obis.close();
-                fis.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -72,7 +75,7 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
         return register(userLogin, userPassHash);
     }
 
-    private boolean register(String login, int userPassHash) {
+    private synchronized boolean register(String login, int userPassHash) {
         for (UserAccount user : users) {
             if (user.getUsername() == login) {
                 feedbackMessage = "Account " + login + " is already exists.";
@@ -80,7 +83,7 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
             }
         }
         users.add(new UserAccount(login, userPassHash));
-        if (saveUsersList()) {
+        if (saveUserAccount()) {
             feedbackMessage = "Registration success, logged in as " + login + ".";
             authorised = true;
             return true;
@@ -106,12 +109,12 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
 
     private boolean login(String login, int passHash) {
         for (UserAccount user : users) {
-            if (user.getUsername() == login && user.getPassHash() == passHash) {
+            if (user.getUsername().equals(login) && user.getPassHash() == passHash) {
                 feedbackMessage = "Logged in successfully as " + login + ".";
                 authorised = true;
                 return true;
             }
-            if (user.getUsername() == login && user.getPassHash() != passHash) {
+            if (user.getUsername().equals(login) && user.getPassHash() != passHash) {
                 feedbackMessage = "Login failed: password is incorrect.";
                 return false;
             }
@@ -130,9 +133,11 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
         return authorised;
     }
 
-    private static synchronized boolean saveUsersList() {
+    private static synchronized boolean saveUserAccount() {
         try {
-            obos.writeObject(users);
+            for (UserAccount user : users) {
+                obos.writeObject(user);
+            }
             return true;
         } catch (IOException e) {
             e.printStackTrace();
