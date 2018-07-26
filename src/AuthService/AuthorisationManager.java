@@ -138,6 +138,8 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
             for (UserAccount user : users) {
                 obos.writeObject(user);
             }
+            obos.flush();
+            fos.flush();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
