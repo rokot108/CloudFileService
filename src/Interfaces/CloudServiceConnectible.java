@@ -1,6 +1,6 @@
 package Interfaces;
 
-public interface CloudServiceConnectable {
+public interface CloudServiceConnectible {
 
     void send(Object obj);
 }

@@ -10,17 +10,18 @@ public class FileManager implements Constants, Server_API {
     private Integer userID;
     private File userDir;
     private File currentDir;
-    CloudServiceConnectable connection;
-    ArrayList<FileWriter> fileWriters;
+    private String feedbackMessage;
+    private CloudServiceConnectible connection;
+    private ArrayList<FileWriter> fileWriters;
 
-    public FileManager(int userID, CloudServiceConnectable connection) {
+    public FileManager(int userID, CloudServiceConnectible connection) {
         this.connection = connection;
         this.userID = userID;
         init();
         initServ();
     }
 
-    public FileManager(CloudServiceConnectable connection) {
+    public FileManager(CloudServiceConnectible connection) {
         this.connection = connection;
         init();
         initUser();
@@ -72,6 +73,14 @@ public class FileManager implements Constants, Server_API {
         } else return null;
     }
 
+    public boolean isAcceptable(String filename) {
+        File tmp = new File(currentDir + "\\" + filename);
+        if (tmp.exists()) {
+            feedbackMessage = "Unable to upload: File " + filename + " is already exists.";
+            return false;
+        } else return true;
+    }
+
     public void sendAFile(String filename) {
         File sendingFile = new File(currentDir + "\\" + filename);
         if (sendingFile.exists()) {
@@ -116,7 +125,7 @@ public class FileManager implements Constants, Server_API {
 
     }
 
-    public void writeSplitedFile(FilePart filePart) {
+    public void writeSplitFile(FilePart filePart) {
         FileWriter tmp = null;
         if (filePart.getPart() == 1 && filePart.getTotalParts() == 1) {
             new FileWriter(this, filePart);
@@ -217,5 +226,9 @@ public class FileManager implements Constants, Server_API {
     public void setUserDir(File userDir) {
         this.userDir = userDir;
         this.currentDir = userDir;
+    }
+
+    public String getFeedbackMessage() {
+        return feedbackMessage;
     }
 }

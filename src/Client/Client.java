@@ -49,12 +49,16 @@ public class Client implements Constants, Server_API {
         if (file.isDirectory()) {
             fileManager.sendDirectory(file.getName());
         } else {
-            fileManager.splitAndSend(file.getName());
+            clientConnection.send(FILE_SEND_REQUEST + STRING_SPLITTER + file.getName());
         }
     }
 
     public void requestFile(String filename) {
-        clientConnection.send(FILE_REQUEST + STRING_SPLITTER + filename);
+        if (fileManager.isAcceptable(filename)) {
+            clientConnection.send(FILE_DOWNLOAD_REQUEST + STRING_SPLITTER + filename);
+        } else {
+            window.setServerMsgLabel("Unable to download: File " + filename + " is already exists.");
+        }
     }
 
     public void reqesFileDelete(String filename) {
@@ -62,7 +66,7 @@ public class Client implements Constants, Server_API {
     }
 
     public void requestAll() {
-        clientConnection.send(REQEST_ALL);
+        clientConnection.send(REQUEST_ALL);
     }
 
     public void requestForRefresh() {

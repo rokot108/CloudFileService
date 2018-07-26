@@ -5,13 +5,14 @@ import Interfaces.Constants;
 import java.io.*;
 import java.util.Vector;
 
-public class AuthorisationManager implements Identificationable, Constants, Serializable {
+public class AuthorisationManager implements Identificationable, Constants {
 
     private static File usersListFile;
     private static Vector<UserAccount> users;
     private static FileOutputStream fos;
     private static FileInputStream fis;
     private static ObjectOutputStream obos;
+    private static AppendingObjectOutputStream aobos;
     private static ObjectInputStream obis;
     private String userLogin;
     private int userPassHash;
@@ -39,19 +40,24 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
                     fis = new FileInputStream(usersListFile);
                     obis = new ObjectInputStream(fis);
                     while (fis.available() != 0) {
-                        users.add((UserAccount) obis.readObject());
+                        Object obj = obis.readObject();
+                        if (obj instanceof UserAccount) {
+                            users.add((UserAccount) obj);
+                        }
                     }
+                    fis.close();
+                    obis.close();
                 } else {
                     usersListFile.createNewFile();
+                    fos = new FileOutputStream(usersListFile);
+                    obos = new ObjectOutputStream(fos);
+                    obos.writeObject("Begin");
+                    obos.writeObject(System.lineSeparator());
+                    obos.close();
+                    fos.close();
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                fos = new FileOutputStream(usersListFile, false);
-                obos = new ObjectOutputStream(fos);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -77,13 +83,14 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
 
     private synchronized boolean register(String login, int userPassHash) {
         for (UserAccount user : users) {
-            if (user.getUsername() == login) {
+            if (user.getUsername().equals(login)) {
                 feedbackMessage = "Account " + login + " is already exists.";
                 return false;
             }
         }
-        users.add(new UserAccount(login, userPassHash));
-        if (saveUserAccount()) {
+        UserAccount tmp = new UserAccount(login, userPassHash);
+        users.add(tmp);
+        if (saveUserAccount(tmp)) {
             feedbackMessage = "Registration success, logged in as " + login + ".";
             authorised = true;
             return true;
@@ -133,13 +140,24 @@ public class AuthorisationManager implements Identificationable, Constants, Seri
         return authorised;
     }
 
-    private static synchronized boolean saveUserAccount() {
+    @Override
+    public boolean logout() {
+        userLogin = null;
+        userPassHash = 000;
+        authorised = false;
+        return true;
+    }
+
+    private static synchronized boolean saveUserAccount(UserAccount user) {
         try {
-            for (UserAccount user : users) {
-                obos.writeObject(user);
-            }
-            obos.flush();
+            fos = new FileOutputStream(usersListFile, true);
+            aobos = new AppendingObjectOutputStream(fos);
+            aobos.writeObject(user);
+            aobos.writeObject(System.lineSeparator());
+            aobos.flush();
             fos.flush();
+            aobos.close();
+            fos.close();
             return true;
         } catch (IOException e) {
             e.printStackTrace();

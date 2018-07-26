@@ -7,20 +7,20 @@ import Interfaces.*;
 import java.io.*;
 import java.net.Socket;
 
-public class ClientHandler implements Server_API, Runnable, CloudServiceConnectable {
+public class ClientHandler implements Server_API, Runnable, CloudServiceConnectible {
 
     Server server;
     private FileManager fileManager;
     private Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private AuthorisationManager authmgr;
+    private AuthorisationManager authMgr;
 
 
     public ClientHandler(Server server, Socket socket) {
         this.server = server;
         this.socket = socket;
-        this.authmgr = new AuthorisationManager();
+        this.authMgr = new AuthorisationManager();
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -31,57 +31,63 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
 
     @Override
     public void run() {
-        while (true) {
-            try {
-                Object request;
-                while (!authmgr.isAuthorised()) {
-                    request = in.readObject();
-                    if (request instanceof String) {
-                        String tmp = (String) request;
-                        if (tmp.startsWith(AUTH)) {
-                            String[] commands = tmp.split(STRING_SPLITTER, 3);
-                            if (commands.length == 3) {
-                                authmgr.setUserLogin(commands[1]);
-                                authmgr.setUserPassHash(Integer.parseInt(commands[2]));
-                                authmgr.login();
-                            }
-                        }
-                        if (tmp.startsWith(REGISTRATION)) {
-                            String[] commands = tmp.split(STRING_SPLITTER, 3);
-                            if (commands.length == 3) {
-                                authmgr.setUserLogin(commands[1]);
-                                authmgr.setUserPassHash(Integer.parseInt(commands[2]));
-                                authmgr.register();
-                            }
-                        }
-                        if (tmp.startsWith(CLOSE_CONNECTION)) {
-                            disconnect();
-                            return;
+        Object request;
+        try {
+            while (!authMgr.isAuthorised()) {
+                request = in.readObject();
+                if (request instanceof String) {
+                    String tmp = (String) request;
+                    if (tmp.startsWith(AUTH)) {
+                        String[] commands = tmp.split(STRING_SPLITTER, 3);
+                        if (commands.length == 3) {
+                            authMgr.setUserLogin(commands[1]);
+                            authMgr.setUserPassHash(Integer.parseInt(commands[2]));
+                            authMgr.login();
                         }
                     }
-                    send(AUTH_MSG + STRING_SPLITTER + authmgr.getFeedbackMessage());
+                    if (tmp.startsWith(REGISTRATION)) {
+                        String[] commands = tmp.split(STRING_SPLITTER, 3);
+                        if (commands.length == 3) {
+                            authMgr.setUserLogin(commands[1]);
+                            authMgr.setUserPassHash(Integer.parseInt(commands[2]));
+                            authMgr.register();
+                        }
+                    }
+                    if (tmp.startsWith(CLOSE_CONNECTION)) {
+                        disconnect();
+                        return;
+                    }
                 }
-
-                this.fileManager = new FileManager(authmgr.getUserLogin().hashCode(), this);
+                send(SERVER_MSG + STRING_SPLITTER + authMgr.getFeedbackMessage());
+            }
+            if (authMgr.isAuthorised()) {
                 send(AUTH_OK);
+                this.fileManager = new FileManager(authMgr.getUserLogin().hashCode(), this);
                 send(fileManager.getFileArray());
                 fileManager.sendCurrentDirName();
 
                 while (true) {
                     request = in.readObject();
                     if (request instanceof FilePart) {
-                        fileManager.writeSplitedFile((FilePart) request);
+                        fileManager.writeSplitFile((FilePart) request);
                         send(fileManager.getFileArray());
                     }
                     if (request instanceof String) {
                         String tmp = (String) request;
                         if (tmp.startsWith(CLOSE_CONNECTION)) {
-                            disconnect();
-                            return;
+                            break;
                         }
-                        if (tmp.startsWith(FILE_REQUEST)) {
+                        if (tmp.startsWith(FILE_DOWNLOAD_REQUEST)) {
                             String[] commands = tmp.split(STRING_SPLITTER, 2);
                             fileManager.sendAFile(commands[1]);
+                        }
+                        if (tmp.startsWith(FILE_SEND_REQUEST)) {
+                            String[] commands = tmp.split(STRING_SPLITTER, 2);
+                            if (fileManager.isAcceptable(commands[1])) {
+                                send(FILE_DOWNLOAD_REQUEST + STRING_SPLITTER + commands[1]);
+                            } else {
+                                send(SERVER_MSG + STRING_SPLITTER + fileManager.getFeedbackMessage());
+                            }
                         }
                         if (tmp.startsWith(CHANGE_CURRENT_SERVER_DIR)) {
                             String[] req = tmp.split(STRING_SPLITTER);
@@ -104,7 +110,7 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                             fileManager.deleteFile(req[1]);
                             send(fileManager.getFileArray());
                         }
-                        if (tmp.startsWith(REQEST_ALL)) {
+                        if (tmp.startsWith(REQUEST_ALL)) {
                             fileManager.sendAll();
                         }
                         if (tmp.startsWith(REFRESH)) {
@@ -112,11 +118,12 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
                         }
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             }
+            disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -131,6 +138,7 @@ public class ClientHandler implements Server_API, Runnable, CloudServiceConnecta
 
     public void disconnect() {
         try {
+            send(null);
             in.close();
             out.close();
             socket.close();

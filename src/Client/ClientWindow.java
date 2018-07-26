@@ -51,6 +51,7 @@ public class ClientWindow extends JFrame {
     private ButtonGroup authOptionsGroup;
     private JRadioButton loginRBtn;
     private JRadioButton registerRBtn;
+    private JPanel jPanelBottomButtons;
     private JButton okBtn;
 
     public ClientWindow(Client client, FileManager fileManager) {
@@ -103,8 +104,10 @@ public class ClientWindow extends JFrame {
             JFileChooser dirChoose = new JFileChooser();
             dirChoose.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int ret = dirChoose.showDialog(null, "Select");
-            fileManager.setUserDir(dirChoose.getSelectedFile());
-            fillUserFileList();
+            if (dirChoose.getSelectedFile() != null) {
+                fileManager.setUserDir(dirChoose.getSelectedFile());
+                fillUserFileList();
+            }
         });
 
         refreshUserFilesListBtn = new JButton();
@@ -341,8 +344,10 @@ public class ClientWindow extends JFrame {
 
         jPanelBottom.add(jPanelAuthPanel, BorderLayout.CENTER);
 
+        jPanelBottomButtons = new JPanel(new FlowLayout());
         okBtn = new JButton("OK");
-        jPanelBottom.add(okBtn, BorderLayout.SOUTH);
+        jPanelBottomButtons.add(okBtn);
+        jPanelBottom.add(jPanelBottomButtons, BorderLayout.SOUTH);
 
         okBtn.addActionListener(e -> {
             String login = loginTxtField.getText();

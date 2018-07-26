@@ -6,7 +6,7 @@ import Interfaces.*;
 import java.io.*;
 import java.net.Socket;
 
-public class ClientConnection implements Constants, Server_API, Runnable, CloudServiceConnectable {
+public class ClientConnection implements Constants, Server_API, Runnable, CloudServiceConnectible {
 
     Socket socket;
     ObjectOutputStream out;
@@ -50,6 +50,11 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
         interrupt();
         send(CLOSE_CONNECTION);
         try {
+            wait(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
             in.close();
             out.close();
             socket.close();
@@ -74,19 +79,23 @@ public class ClientConnection implements Constants, Server_API, Runnable, CloudS
                 e.printStackTrace();
             }
             if (request instanceof FilePart) {
-                fileManager.writeSplitedFile((FilePart) request);
+                fileManager.writeSplitFile((FilePart) request);
             }
             if (request instanceof File[]) {
                 client.fillServerFileList((File[]) request);
             }
             if (request instanceof String) {
                 String tmp = (String) request;
-                if (tmp.startsWith(AUTH_MSG)) {
+                if (tmp.startsWith(CLOSE_CONNECTION)) {
+                    disconnect();
+                }
+                if (tmp.startsWith(SERVER_MSG)) {
                     String[] req = tmp.split(STRING_SPLITTER, 2);
                     client.showMsg(req[1]);
                 }
-                if (tmp.startsWith(CLOSE_CONNECTION)) {
-                    disconnect();
+                if (tmp.startsWith(FILE_DOWNLOAD_REQUEST)) {
+                    String[] req = tmp.split(STRING_SPLITTER, 2);
+                    fileManager.splitAndSend(req[1]);
                 }
                 if (tmp.startsWith(NEW_CURRENT_SERVER_DIR)) {
                     String[] req = tmp.split(STRING_SPLITTER, 2);

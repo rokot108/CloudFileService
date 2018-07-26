@@ -6,9 +6,10 @@ public interface Server_API {
     String REGISTRATION = "/reg";
     String AUTH = "/auth";
     String AUTH_OK = "/authok";
-    String AUTH_MSG = "/authmsg";
-    String FILE_REQUEST = "/freq";
-    String REQEST_ALL = "/reqAll";
+    String SERVER_MSG = "/serverMsg";
+    String FILE_DOWNLOAD_REQUEST = "/fileReq";
+    String FILE_SEND_REQUEST = "/sendReq";
+    String REQUEST_ALL = "/reqAll";
     String NEW_CURRENT_SERVER_DIR = "/newcurrdir";
     String CHANGE_CURRENT_SERVER_DIR = "/changedir";
     String UP_CURRENT_SERVER_DIR = "/updir";

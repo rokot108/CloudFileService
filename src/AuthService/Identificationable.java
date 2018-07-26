@@ -11,4 +11,6 @@ public interface Identificationable {
     String getFeedbackMessage();
 
     boolean isAuthorised();
+
+    boolean logout();
 }
